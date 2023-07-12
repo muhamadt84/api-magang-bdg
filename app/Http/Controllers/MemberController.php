@@ -29,13 +29,13 @@ class MemberController extends Controller
         }
 
         $member = new Member();
-        $member->name = $request->input('fullname');
+        $member->fullname = $request->input('fullname');
         $member->username = $request->input('username');
         $member->email = $request->input('email');
         $member->password = bcrypt($request->input('password'));
         $member->save();
 
-        $token = $member->createToken('API Token')->plainTextToken;
+        $token = $member->createToken('app-token')->plainTextToken;
 
         return response()->json([
             'success' => true,
@@ -54,7 +54,7 @@ class MemberController extends Controller
 
         if (Auth::attempt($credentials)) {
             $member = Auth::user();
-            $token = $member->createToken('API Token')->plainTextToken;
+            $token = $member->createToken('app-token')->plainTextToken;
 
             return response()->json([
                 'success' => true,
@@ -116,7 +116,7 @@ class MemberController extends Controller
         }
 
         $member = Member::findOrFail($id);
-        $member->name = $request->input('fullname');
+        $member->fullname = $request->input('fullname');
         $member->username = $request->input('username');
         $member->email = $request->input('email');
 

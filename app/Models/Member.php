@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 
 class Member extends Authenticatable
 {
-    use HasApiTokens;
+    use HasApiTokens, Notifiable;
 
     protected $fillable = [
         'fullname', 'username', 'email', 'password',
@@ -16,4 +17,9 @@ class Member extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 }
+

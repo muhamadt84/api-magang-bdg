@@ -22,9 +22,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth.app-token')->group(function () {
-Route::post('/register',[MemberController::class, 'register']);
-Route::post('/login',[MemberController::class, 'login']);
+Route::post('/register', [MemberController::class, 'register']);
+Route::post('/login', [MemberController::class, 'login']);
+
+Route::middleware('auth:app-token')->group(function () {
+    Route::get('/members', [MemberController::class, 'index']);
+    Route::get('/members/{id}', [MemberController::class, 'show']);
+    Route::put('/members/{id}', [MemberController::class, 'update']);
+    Route::delete('/members/{id}', [MemberController::class, 'destroy']);
 });
 
 Route::middleware('auth.app-token')->group(function () {
