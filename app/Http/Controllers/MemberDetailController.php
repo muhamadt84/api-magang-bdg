@@ -1,5 +1,5 @@
-<?php
-
+<?php 
+//cek tadi salah merge
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -11,7 +11,7 @@ class MemberDetailController extends Controller
      */
     public function index()
     {
-        //
+        //cek tadi salah merge
     }
 
     /**
