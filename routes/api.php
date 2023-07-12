@@ -23,16 +23,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth.app-token')->group(function () {
-Route::get('/list',[TableCategoryController::class,'index']);
-Route::post('/store',[TableCategoryController::class,'create']);
-Route::put('/update/{id}',[TableCategoryController::class,'update']);
-Route::delete('/destroy/{id}',[TableCategoryController::class,'destroy']);
-Route::get('/show',[ArticleController::class,'index']);
-Route::get('/detail/{id}',[ArticleController::class,'detail']);
-Route::post('/create',[ArticleController::class,'create']);
-Route::post('/update/{id}',[ArticleController::class,'update']);
-Route::delete('/destroy/{id}',[ArticleController::class,'destroy']);
+    Route::get('/list', [TableCategoryController::class, 'index']);
+    Route::post('/store', [TableCategoryController::class, 'create']);
+    Route::put('/update/{id}', [TableCategoryController::class, 'update']);
+    Route::delete('/destroy/{id}', [TableCategoryController::class, 'destroy']);
+    Route::get('/show', [ArticleController::class, 'index']);
+    Route::get('/detail/{id}', [ArticleController::class, 'detail']);
+    Route::post('/create', [ArticleController::class, 'create']);
+    Route::post('/update/{id}', [ArticleController::class, 'update']);
+    Route::delete('/destroy/{id}', [ArticleController::class, 'destroy']);
 });
-
 
 Route::post('/generate-app-token', [AuthController::class, 'generateAppToken']);
