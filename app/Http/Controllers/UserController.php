@@ -12,7 +12,9 @@ class UserController extends Controller
     /**
      * Register a new user.
      */
-    public function register(Request $request)
+    
+    
+     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
@@ -138,6 +140,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
+        dd($request);
         $user = User::findOrFail($id);
         $user->delete();
 
