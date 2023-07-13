@@ -7,12 +7,17 @@ use Illuminate\Http\Request;
 
 class TokenController extends Controller
 {
-    public function index()
+    public function generateAppToken()
     {
-        $tokens = Token::all();
-
-        return view('tokens.index', compact('tokens'));
+        $appToken = Str::random(64); // Menghasilkan token acak dengan panjang 64 karakter
+        
+        // Simpan token ini ke dalam database atau tempat penyimpanan lain yang sesuai
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'App Token generated successfully.',
+            'app_token' => $appToken,
+        ], 200);
     }
-
-   
+    
 }

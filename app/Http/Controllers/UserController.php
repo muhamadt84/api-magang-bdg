@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class MemberController extends Controller
+class UserController extends Controller
 {
     /**
      * Register a new user.
@@ -28,19 +28,19 @@ class MemberController extends Controller
             ], 422);
         }
 
-        $member = new Member();
-        $member->fullname = $request->input('fullname');
-        $member->username = $request->input('username');
-        $member->email = $request->input('email');
-        $member->password = bcrypt($request->input('password'));
-        $member->save();
+        $user = new Member();
+        $user->fullname = $request->input('fullname');
+        $user->username = $request->input('username');
+        $user->email = $request->input('email');
+        $user->password = bcrypt($request->input('password'));
+        $user->save();
 
-        $token = $member->createToken('app-token')->plainTextToken;
+        $token = $user->createToken('app-token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'message' => 'Registration successful',
-            'user' => $member,
+            'user' => $user,
             'token' => $token,
         ], 201);
     }
@@ -53,13 +53,13 @@ class MemberController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $member = Auth::user();
+            $user = Auth::user();
             $token = $member->createToken('app-token')->plainTextToken;
 
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
-                'user' => $member,
+                'user' => $user,
                 'token' => $token,
             ]);
         } else {
@@ -79,7 +79,7 @@ class MemberController extends Controller
 
         return response()->json([
             'success' => true,
-            'members' => $members,
+            'users' => $users,
         ]);
     }
 
@@ -88,11 +88,11 @@ class MemberController extends Controller
      */
     public function show(string $id)
     {
-        $member = Member::findOrFail($id);
+        $user = User::findOrFail($id);
 
         return response()->json([
             'success' => true,
-            'member' => $member,
+            'user' => $user,
         ]);
     }
 
@@ -115,21 +115,21 @@ class MemberController extends Controller
             ], 422);
         }
 
-        $member = Member::findOrFail($id);
-        $member->fullname = $request->input('fullname');
-        $member->username = $request->input('username');
-        $member->email = $request->input('email');
+        $user = Member::findOrFail($id);
+        $user->fullname = $request->input('fullname');
+        $user->username = $request->input('username');
+        $user->email = $request->input('email');
 
         if ($request->has('password')) {
-            $member->password = bcrypt($request->input('password'));
+            $user->password = bcrypt($request->input('password'));
         }
 
-        $member->save();
+        $user->save();
 
         return response()->json([
             'success' => true,
             'message' => 'Member updated successfully',
-            'user' => $member,
+            'user' => $user,
         ]);
     }
 
@@ -138,8 +138,8 @@ class MemberController extends Controller
      */
     public function destroy(string $id)
     {
-        $member = Member::findOrFail($id);
-        $member->delete();
+        $user = User::findOrFail($id);
+        $user->delete();
 
         return response()->json([
             'success' => true,
