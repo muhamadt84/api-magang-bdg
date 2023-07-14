@@ -15,37 +15,45 @@ class UserController extends Controller
     
     
      public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'fullname' => 'required',
-            'username' => 'required',
-            'email' => 'required|email|unique:members',
-            'password' => 'required|min:6',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $user = new Member();
-        $user->fullname = $request->input('fullname');
-        $user->username = $request->input('username');
-        $user->email = $request->input('email');
-        $user->password = bcrypt($request->input('password'));
-        $user->save();
-
-        $token = $user->createToken('app-token')->plainTextToken;
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Registration successful',
-            'user' => $user,
-            'token' => $token,
-        ], 201);
-    }
+     {
+         if (!$request->app_token) {
+             return "app token required";
+         } elseif ($request->app_token != "token_yang_benar") {
+             return "app token salah";
+         }
+     
+         dd($request);
+         $validator = Validator::make($request->all(), [
+             'fullname' => 'required',
+             'username' => 'required',
+             'email' => 'required|email|unique:members',
+             'password' => 'required|min:6',
+         ]);
+     
+         if ($validator->fails()) {
+             return response()->json([
+                 'success' => false,
+                 'errors' => $validator->errors(),
+             ], 422);
+         }
+     
+         $user = new User();
+         $user->fullname = $request->input('fullname');
+         $user->username = $request->input('username');
+         $user->email = $request->input('email');
+         $user->password = bcrypt($request->input('password'));
+         $user->save();
+     
+         $token = $user->createToken('app-token')->plainTextToken;
+     
+         return response()->json([
+             'success' => true,
+             'message' => 'Registration successful',
+             'user' => $user,
+             'token' => $token,
+         ], 201);
+     }
+     
 
     /**
      * Login with user credentials.
@@ -56,7 +64,7 @@ class UserController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            $token = $member->createToken('app-token')->plainTextToken;
+            $token = $user->createToken('app-token')->plainTextToken;
 
             return response()->json([
                 'success' => true,
@@ -77,7 +85,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $members = Member::all();
+        
+        $users = User::all();
 
         return response()->json([
             'success' => true,
