@@ -56,13 +56,13 @@ class ArticleController extends Controller
             'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
-        // $article = new Article;
-        // $article->title = $validated['title'];
-        // $article->description = $validated['description'];
-        // $article->member_id = $validated['member_id'];
-        // $article->categori_id = $validated['categori_id'];
-        // $article->total_like = 0; // Set nilai awal total_like menjadi 0
-        // $article->total_comment = 0; // Set nilai awal total_comments menjadi 0
+        $article = new Article;
+        $article->title = $validated['title'];
+        $article->description = $validated['description'];
+        $article->member_id = $validated['member_id'];
+        $article->categori_id = $validated['categori_id'];
+        $article->total_like = 0; // Set nilai awal total_like menjadi 0
+        $article->total_comment = 0; // Set nilai awal total_comments menjadi 0
         // if ($request->file) {
         //     // Simpan file gambar melalui ArticleImageController
         //     $imageController = new ArticleImageController;
