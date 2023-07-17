@@ -50,29 +50,29 @@ class ArticleController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|max:255',
-            'descryption' => 'required',
+            'description' => 'required',
             'member_id' => 'required',
             'categori_id' => 'required',
             'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
-        $article = new Article;
-        $article->title = $validated['title'];
-        $article->description = $validated['descryption'];
-        $article->member_id = $validated['member_id'];
-        $article->categori_id = $validated['categori_id'];
-        $article->total_like = 0; // Set nilai awal total_like menjadi 0
-        $article->total_comment = 0; // Set nilai awal total_comments menjadi 0
-        if ($request->file) {
-            // Simpan file gambar melalui ArticleImageController
-            $imageController = new ArticleImageController;
-            $imagePath = $imageController->storeImage($request->file);
-            $imagePath = $request->file('file')->store('public/images');
-            // Dapatkan URL dari path gambar
-            $imageLink = url(Storage::url($imagePath));
-            $imageLink = '';
-            $article->image = $imageLink;
-        }
+        // $article = new Article;
+        // $article->title = $validated['title'];
+        // $article->description = $validated['description'];
+        // $article->member_id = $validated['member_id'];
+        // $article->categori_id = $validated['categori_id'];
+        // $article->total_like = 0; // Set nilai awal total_like menjadi 0
+        // $article->total_comment = 0; // Set nilai awal total_comments menjadi 0
+        // if ($request->file) {
+        //     // Simpan file gambar melalui ArticleImageController
+        //     $imageController = new ArticleImageController;
+        //     $imagePath = $imageController->storeImage($request->file);
+        //     $imagePath = $request->file('file')->store('public/images');
+        //     // Dapatkan URL dari path gambar
+        //     $imageLink = url(Storage::url($imagePath));
+        //     $imageLink = '';
+        //     $article->image = $imageLink;
+        // }
     
         $article->save();
     
@@ -142,7 +142,7 @@ class ArticleController extends Controller
         // Define validation rules
         $validator = Validator::make($request->all(), [
             'title' => 'required|max:255',
-            'descryption' => 'required',
+            'description' => 'required',
             'member_id' => 'required',
             'categori_id' => 'required',
             'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -170,20 +170,20 @@ class ArticleController extends Controller
     
         // Update the article fields
         $article->title = $request->input('title');
-        $article->descryption = $request->input('descryption');
+        $article->description = $request->input('description');
         $article->member_id = $request->input('member_id');
         $article->categori_id = $request->input('categori_id');
     
-        if ($request->hasFile('image')) {
-            // Simpan file gambar melalui ArticleImageController
-            $imageController = new ArticleImageController;
-            $imagePath = $imageController->storeImage($request->file('image'));
+        // if ($request->hasFile('image')) {
+        //     // Simpan file gambar melalui ArticleImageController
+        //     $imageController = new ArticleImageController;
+        //     $imagePath = $imageController->storeImage($request->file('image'));
     
-            // Dapatkan URL dari path gambar
-            $imageLink = url(Storage::url($imagePath));
+        //     // Dapatkan URL dari path gambar
+        //     $imageLink = url(Storage::url($imagePath));
     
-            $article->image = $imageLink;
-        }
+        //     $article->image = $imageLink;
+        // }
     
         // Save the changes
         $article->save();
