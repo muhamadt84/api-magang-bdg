@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\TableCategoryController;
 
@@ -33,6 +34,11 @@ Route::post('/create',[ArticleController::class,'create']);
 Route::post('/update/{id}',[ArticleController::class,'update']);
 Route::delete('/destroy/{id}',[ArticleController::class,'destroy']);
 });
+
+Route::post('/store',[ProductController::class,'create']);
+Route::post('/post',[ProductController::class,'post']);
+Route::get('/list',[ProductController::class,'index']);
+Route::get('/detail/{id}',[ProductController::class,'detail']);
 
 
 Route::post('/generate-app-token', [AuthController::class, 'generateAppToken']);

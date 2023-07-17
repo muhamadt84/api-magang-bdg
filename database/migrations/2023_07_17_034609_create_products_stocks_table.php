@@ -15,9 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('product_id');
             $table->text('qty');
-            $table->timestamps('created_at');
+            $table->timestamps();
             $table->enum('deleted', ['0', '1']);
-
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_stocks');
+        Schema::dropIfExists('products_stocks');
     }
 };

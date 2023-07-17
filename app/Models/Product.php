@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+class Product extends Model
 {
     use softdeletes;
     use HasFactory;
@@ -29,12 +29,4 @@ class Post extends Model
 
     ];
 
-    /**
-     * Get the writer that owns the post
-     *
-     *@return BelongsTo*/
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(TableCategory::class,'categories_id', 'id');
-    }
 }

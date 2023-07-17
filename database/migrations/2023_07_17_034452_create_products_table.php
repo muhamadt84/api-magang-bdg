@@ -20,8 +20,7 @@ return new class extends Migration
             $table->decimal('rating');
             $table->string('brand');
             $table->integer('member_id');
-            $table->timestamps('created_at');
-            $table->timestamps('updated_at');
+            $table->timestamps();
             $table->enum('deleted', ['0', '1']);
 
         });
