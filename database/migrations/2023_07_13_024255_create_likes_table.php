@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('article_id');
             $table->text('member_id');
-            $table->timestamps('created_at');
+            $table->timestamps();
         });
     }
 
