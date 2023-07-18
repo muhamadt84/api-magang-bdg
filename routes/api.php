@@ -40,18 +40,19 @@ Route::get('/list',[TableCategoryController::class,'index']);
 Route::post('/store',[TableCategoryController::class,'create']);
 Route::put('/update/ {id}',[TableCategoryController::class,'update']);
 Route::delete('/destroy/{id}',[TableCategoryController::class,'destroy']);
+
 Route::get('/show',[ArticleController::class,'index']);
 Route::get('/detail/{id}',[ArticleController::class,'detail']);
 Route::post('/create',[ArticleController::class,'create']);
-Route::post('/update/{id}',[ArticleController::class,'update']);
-Route::delete('/destroy/{id}',[ArticleController::class,'destroy']);
+Route::post('/renew/{id}',[ArticleController::class,'update']);
+Route::delete('/delete/{id}',[ArticleController::class,'destroy']);
 });
 
 
-Route::post('/store',[CommentController::class,'create']);
+Route::post('/add',[CommentController::class,'create']);
 Route::post('/post',[CommentController::class,'post']);
-Route::get('/list',[CommentController::class,'index']);
-Route::get('/detail/{id}',[CommentController::class,'detail']);
+Route::get('/display',[CommentController::class,'index']);
+Route::get('/specific/{id}',[CommentController::class,'detail']);
 
 
 Route::post('/generate-app-token', [AuthController::class, 'generateAppToken']);
