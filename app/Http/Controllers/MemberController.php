@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Member;
+
+use App\Models\Members;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class UserController extends Controller
+class MemberController extends Controller
 {
     /**
      * Register a new user.
@@ -16,17 +17,15 @@ class UserController extends Controller
     
      public function register(Request $request)
      {
-         if (!$request->app_token) {
-             return "app token required";
-         } elseif ($request->app_token != "token_yang_benar") {
-             return "app token salah";
-         }
+         $table_member = new Members;
+         
+         
      
        
          $validator = Validator::make($request->all(), [
              'fullname' => 'required',
              'username' => 'required',
-             'email' => 'required|email|unique:members',
+             'email' => 'required|email|unique:table_member',
              'password' => 'required|min:6',
          ]);
      
@@ -37,7 +36,9 @@ class UserController extends Controller
              ], 422);
          }
      
-         $user = new User();
+        
+
+         $user = new Members();
          $user->fullname = $request->input('fullname');
          $user->username = $request->input('username');
          $user->email = $request->input('email');
@@ -49,7 +50,7 @@ class UserController extends Controller
          return response()->json([
              'success' => true,
              'message' => 'Registration successful',
-             'user' => $user,
+             'data' => $table_member,
              'token' => $token,
          ], 201);
      }
@@ -60,16 +61,17 @@ class UserController extends Controller
      */
     public function login(Request $request)
     {
+        $table_member = new Members;
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $token = $user->createToken('app-token')->plainTextToken;
+            $table_member = Auth::members();
+            $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
 
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
-                'user' => $user,
+                'member' => $table_member,
                 'token' => $token,
             ]);
         } else {
@@ -85,12 +87,12 @@ class UserController extends Controller
      */
     public function index()
     {
-        
+        $table_member = new Members;
         $users = User::all();
 
         return response()->json([
             'success' => true,
-            'users' => $users,
+            'users' => $table_member,
         ]);
     }
 
@@ -99,11 +101,13 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
+        $table_member = new Members;
+        $table_member = new Members;
         $user = User::findOrFail($id);
 
         return response()->json([
             'success' => true,
-            'user' => $user,
+            'user' => $table_member,
         ]);
     }
 
@@ -112,10 +116,11 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $table_member = new Members;
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
             'username' => 'required',
-            'email' => 'required|email|unique:members,email,' . $id,
+            'email' => 'required|email|unique:table_member,email,' . $id,
             'password' => 'nullable|min:6',
         ]);
 
@@ -140,7 +145,7 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Member updated successfully',
-            'user' => $user,
+            'member' => $table_member,
         ]);
     }
 
@@ -149,7 +154,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        dd($request);
+        $table_member = new Members;
         $user = User::findOrFail($id);
         $user->delete();
 
