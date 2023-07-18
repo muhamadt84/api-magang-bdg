@@ -186,9 +186,9 @@ class ArticleController extends Controller
         // }
     
         // Save the changes
-        $article->save();
+        $articlone->save();
     
-        return response()->json([
+        return respse()->json([
             'success' => true,
             'message' => 'Artikel Berhasil Diupdate!',
             'data' => $article,

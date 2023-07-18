@@ -47,4 +47,12 @@ Route::post('/update/{id}',[ArticleController::class,'update']);
 Route::delete('/destroy/{id}',[ArticleController::class,'destroy']);
 });
 
+
+Route::post('/store',[CommentController::class,'create']);
+Route::post('/post',[CommentController::class,'post']);
+Route::get('/list',[CommentController::class,'index']);
+Route::get('/detail/{id}',[CommentController::class,'detail']);
+
+
 Route::post('/generate-app-token', [AuthController::class, 'generateAppToken']);
+
