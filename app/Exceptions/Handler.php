@@ -48,14 +48,14 @@ class Handler extends ExceptionHandler
             ], 405);
         });
 
-        // Handle internal server errors (500)
-        // $this->renderable(function (Throwable $e, Request $request) {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Internal Server Error',
-        //         'data' => []
-        //     ], 500);
-        // });
+         
+         $this->renderable(function (Throwable $e, Request $request) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal Server Error',
+                'data' => []
+          ], 500);
+         });
 
         return parent::render($request, $exception);
     }
