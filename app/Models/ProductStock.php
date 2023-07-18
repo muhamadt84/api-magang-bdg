@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\ProductStock;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class product_stock extends Model
+class ProductStock extends Model
 {
-    use SoftDeletes;
-    use HasFactory;
+    
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'id',
         'product_id',

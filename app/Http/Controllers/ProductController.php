@@ -47,12 +47,12 @@ class ProductController extends Controller
         }
     }
 
-    public function create(Request $request)
+    public function post(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|max:255',
+            'category_id' => 'required',
             'description' => 'required',
-            'categori_id' => 'required',
             'price' => 'required',
             'discount' => 'required',
             'rating' => 'required',
@@ -89,7 +89,6 @@ class ProductController extends Controller
             'data' => $Product,
         ], 201);
     }
-    
     
 
     /**
@@ -150,7 +149,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'nama' => 'required|max:255',
             'description' => 'required',
-            'categori_id' => 'required',
+            'category_id' => 'required',
             'price' => 'required',
             'discount' => 'required',
             'rating' => 'required',
@@ -167,10 +166,10 @@ class ProductController extends Controller
             ], 422);
         }
     
-        // Find article by ID
+        // Find product by ID
         $Product = Product::find($id);
     
-        // Check if article exists
+        // Check if product exists
         if (!$Product) {
             return response()->json([
                 'success' => false,
@@ -179,7 +178,7 @@ class ProductController extends Controller
             ], 404);
         }
     
-        // Update the article fields
+        // Update the product fields
         $Product->nama = $Product->input('nama');
         $Product->descryption = $Product->input('descryption');
         $Product->categori_id = $Product->input('categori_id');
