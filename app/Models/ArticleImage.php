@@ -2,12 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Article;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ArticleImage extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
+
     protected $table = 'table_article_image';
-    protected $fillable = ['image_path', 'image_link'];
+
+    protected $fillable = [
+        'article_id',
+        'image',
+    ];
+
+    public function article()
+    {
+        return $this->belongsTo(Article::class, 'article_id');
+    }
 }

@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('table_article_image', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->integer('article_id')->default(0);
-            $table->text('image')->nullable();
+            $table->integer('article_id');
+            $table->text('comment');
+            $table->integer('member_id');
             $table->timestamps();
-            $table->softDeletes();
-            
-            // $table->foreign('article_id')->references('id')->on('articles');
+            $table->enum('deleted', ['0', '1']);
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('article_images');
+        Schema::dropIfExists('comments');
     }
 };

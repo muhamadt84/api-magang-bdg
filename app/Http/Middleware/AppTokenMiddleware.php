@@ -8,14 +8,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AppTokenMiddleware
 {
-    /**
+  /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
-        $expectedToken = 'MAGANGTELKOM'; // Mengambil App Token dari konfigurasi
+        $expectedToken = 'MAGANGTELKOM'; // Menentukan token yang diharapkan
 
         $token = $request->header('APP-TOKEN');
 
@@ -28,5 +30,5 @@ class AppTokenMiddleware
         }
 
         return $next($request);
-}
+    }
 }
