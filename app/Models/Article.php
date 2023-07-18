@@ -13,19 +13,26 @@ class Article extends Model
 
     protected $fillable = [
         'title',
-        'descryption',
+        'description',
         'member_id',
-        'category_id',
-        'image',
-        'image', 
+        'categori_id',
+        'total_like',
+        'total_comment',
+        'image'
     ];
 
-     /**
-     * Get the writer that owns the post
-     *
-     * @return BelongsTo*/
-    public function category(): BelongsTo
+    public function member()
     {
-        return $this->belongsTo(TableCategory::class,'categories_id', 'id');
+        return $this->belongsTo(Member::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(TableCategory::class, 'categori_id');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ArticleImage::class, 'article_id');
     }
 }
