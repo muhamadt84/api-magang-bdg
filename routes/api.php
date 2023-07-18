@@ -23,28 +23,23 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Route::middleware('auth:app-token')->group(function () {
-Route::post('/register', [UserController::class, 'register']);
-Route::post('/login', [UserController::class, 'login']);
-//});
 
-//Route::middleware('auth:app-token')->group(function () {
+Route::middleware('auth.app-token')->group(function () {
+    Route::post('/register', [UserController::class, 'register']);
+    Route::post('/login', [UserController::class, 'login']);
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
-//});
-
-Route::middleware('auth.app-token')->group(function () {
-Route::get('/list',[TableCategoryController::class,'index']);
-Route::post('/store',[TableCategoryController::class,'create']);
-Route::put('/update/{id}',[TableCategoryController::class,'update']);
-Route::delete('/destroy/{id}',[TableCategoryController::class,'destroy']);
-Route::get('/show',[ArticleController::class,'index']);
-Route::get('/detail/{id}',[ArticleController::class,'detail']);
-Route::post('/create',[ArticleController::class,'create']);
-Route::post('/update/{id}',[ArticleController::class,'update']);
-Route::delete('/destroy/{id}',[ArticleController::class,'destroy']);
+    Route::get('/list',[TableCategoryController::class,'index']);
+    Route::post('/store',[TableCategoryController::class,'create']);
+    Route::put('/update/{id}',[TableCategoryController::class,'update']);
+    Route::delete('/destroy/{id}',[TableCategoryController::class,'destroy']);
+    Route::get('/show',[ArticleController::class,'index']);
+    Route::get('/detail/{id}',[ArticleController::class,'detail']);
+    Route::post('/create',[ArticleController::class,'create']);
+    Route::post('/update/{id}',[ArticleController::class,'update']);
+    Route::delete('/destroy/{id}',[ArticleController::class,'destroy']);
 });
 
 
