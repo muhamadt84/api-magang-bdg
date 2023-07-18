@@ -31,23 +31,19 @@ Route::middleware('auth.app-token')->group(function () {
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
-<<<<<<< HEAD
- 
-=======
-//});
+});
 
 Route::middleware('auth.app-token')->group(function () {
-Route::get('/list',[TableCategoryController::class,'index']);
-Route::post('/store',[TableCategoryController::class,'create']);
-Route::put('/update/ {id}',[TableCategoryController::class,'update']);
-Route::delete('/destroy/{id}',[TableCategoryController::class,'destroy']);
+    Route::get('/list',[TableCategoryController::class,'index']);
+    Route::post('/store',[TableCategoryController::class,'create']);
+    Route::put('/update/ {id}',[TableCategoryController::class,'update']);
+    Route::delete('/destroy/{id}',[TableCategoryController::class,'destroy']);
 
-Route::get('/show',[ArticleController::class,'index']);
-Route::get('/detail/{id}',[ArticleController::class,'detail']);
-Route::post('/create',[ArticleController::class,'create']);
-Route::post('/renew/{id}',[ArticleController::class,'update']);
-Route::delete('/delete/{id}',[ArticleController::class,'destroy']);
->>>>>>> ddf1d1f29ff6730551fa1fd8a94168831d45f436
+    Route::get('/show',[ArticleController::class,'index']);
+    Route::get('/detail/{id}',[ArticleController::class,'detail']);
+    Route::post('/create',[ArticleController::class,'create']);
+    Route::post('/renew/{id}',[ArticleController::class,'update']);
+    Route::delete('/delete/{id}',[ArticleController::class,'destroy']);
 });
 
 
