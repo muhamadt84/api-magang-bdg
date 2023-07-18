@@ -61,18 +61,18 @@ class MemberController extends Controller
      */
     public function login(Request $request)
     {
-        $table_member = new Members;
+        
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             $table_member = Auth::members();
-            $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
+            $apptoken = $table_member->createToken('APP-TOKEN')->plainTextToken;
 
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
                 'member' => $table_member,
-                'token' => $token,
+                'token' => $apptoken,
             ]);
         } else {
             return response()->json([
@@ -87,8 +87,8 @@ class MemberController extends Controller
      */
     public function index()
     {
-        $table_member = new Members;
-        $users = User::all();
+        
+        $table_member = Members::all();
 
         return response()->json([
             'success' => true,
@@ -101,9 +101,8 @@ class MemberController extends Controller
      */
     public function show(string $id)
     {
-        $table_member = new Members;
-        $table_member = new Members;
-        $user = User::findOrFail($id);
+        
+        $table_member = Members::findOrFail($id);
 
         return response()->json([
             'success' => true,
@@ -116,12 +115,18 @@ class MemberController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $table_member = new Members;
+        
         $validator = Validator::make($request->all(), [
-            'fullname' => 'required',
-            'username' => 'required',
-            'email' => 'required|email|unique:table_member,email,' . $id,
-            'password' => 'nullable|min:6',
+            'member_id' => 'required',
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'dob' => 'required' ,
+            'gender' => 'required',
+            'address' => 'required',
+            'image' => 'required',
+            'bio' => 'required',
+            'highschool' => 'required',
+            'phone_number' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -131,16 +136,16 @@ class MemberController extends Controller
             ], 422);
         }
 
-        $user = Member::findOrFail($id);
-        $user->fullname = $request->input('fullname');
-        $user->username = $request->input('username');
-        $user->email = $request->input('email');
+        $table_member = Member::findOrFail($id);
+        $table_member->fullname = $request->input('fullname');
+        $table_member->username = $request->input('username');
+        $table_member->email = $request->input('email');
 
         if ($request->has('password')) {
-            $user->password = bcrypt($request->input('password'));
+            $table_member->password = bcrypt($request->input('password'));
         }
 
-        $user->save();
+        $table_member->save();
 
         return response()->json([
             'success' => true,
@@ -154,9 +159,9 @@ class MemberController extends Controller
      */
     public function destroy(string $id)
     {
-        $table_member = new Members;
-        $user = User::findOrFail($id);
-        $user->delete();
+        
+        $table_member = Members::findOrFail($id);
+        $table_member->delete();
 
         return response()->json([
             'success' => true,
