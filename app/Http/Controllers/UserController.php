@@ -22,7 +22,7 @@ class UserController extends Controller
              return "app token salah";
          }
      
-         dd($request);
+       
          $validator = Validator::make($request->all(), [
              'fullname' => 'required',
              'username' => 'required',

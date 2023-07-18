@@ -23,16 +23,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Route::middleware('auth:app-token')->group(function () {
-Route::post('/register', [UserController::class, 'register']);
-Route::post('/login', [UserController::class, 'login']);
-//});
 
-//Route::middleware('auth:app-token')->group(function () {
+Route::middleware('auth.app-token')->group(function () {
+    Route::post('/register', [UserController::class, 'register']);
+    Route::post('/login', [UserController::class, 'login']);
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
+<<<<<<< HEAD
+ 
+=======
 //});
 
 Route::middleware('auth.app-token')->group(function () {
@@ -46,6 +47,7 @@ Route::get('/detail/{id}',[ArticleController::class,'detail']);
 Route::post('/create',[ArticleController::class,'create']);
 Route::post('/renew/{id}',[ArticleController::class,'update']);
 Route::delete('/delete/{id}',[ArticleController::class,'destroy']);
+>>>>>>> ddf1d1f29ff6730551fa1fd8a94168831d45f436
 });
 
 
