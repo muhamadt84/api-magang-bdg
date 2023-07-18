@@ -33,7 +33,7 @@ class TableCategoryController extends Controller
             }
     
             $tableCategory = TableCategory::paginate($perPage);
-            $tableCategory->makeHidden(['updated_at', 'deleted']);
+            $tableCategory->makeHidden(['updated_at', 'deleted','deleted_at']);
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua Posts!',
@@ -79,7 +79,7 @@ class TableCategoryController extends Controller
     public function show($id)
     {
         $tableCategory = TableCategory::with('writer:id,username')->findOrFail($id);
-        $tableCategory->makeHidden(['updated_at', 'deleted_at']);
+        $tableCategory->makeHidden(['updated_at', 'deleted_at',]);
              if ($tableCategory) {
             return response()->json([
                 'success' => true,

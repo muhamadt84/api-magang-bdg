@@ -47,5 +47,4 @@ Route::post('/update/{id}',[ArticleController::class,'update']);
 Route::delete('/destroy/{id}',[ArticleController::class,'destroy']);
 });
 
-
 Route::post('/generate-app-token', [AuthController::class, 'generateAppToken']);

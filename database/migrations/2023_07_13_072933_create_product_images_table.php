@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('product_id');
             $table->text('image');
-            $table->timestamps('created_at');
+            $table->timestamps();
             $table->enum('deleted', ['0', '1']);
         });
     }

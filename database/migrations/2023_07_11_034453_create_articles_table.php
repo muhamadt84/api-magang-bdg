@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('total_comment');
             $table->integer('member_id');
             $table->timestamps();
-            $table->enum('deleted', ['0', '1']);
             $table->softDeletes();
             // $table->foreign('categori_id')->references('id')->on('table_categories');
         });
