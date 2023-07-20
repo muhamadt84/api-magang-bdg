@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ArticleImage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,8 +32,8 @@ class Article extends Model
         return $this->belongsTo(TableCategory::class, 'categori_id');
     }
 
-    public function images()
+    public function image()
     {
-        return $this->hasMany(ArticleImage::class, 'article_id');
+        return $this->hasOne(ArticleImage::class);
     }
 }

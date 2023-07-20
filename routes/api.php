@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\TableCategoryController;
 
@@ -36,18 +37,18 @@ Route::post('/login', [UserController::class, 'login']);
 //});
 
 Route::middleware('auth.app-token')->group(function () {
+    
 Route::get('/list',[TableCategoryController::class,'index']);
 Route::post('/store',[TableCategoryController::class,'create']);
-Route::put('/update/ {id}',[TableCategoryController::class,'update']);
+Route::put('/update/{id}',[TableCategoryController::class,'update']);
 Route::delete('/destroy/{id}',[TableCategoryController::class,'destroy']);
 
 Route::get('/show',[ArticleController::class,'index']);
 Route::get('/detail/{id}',[ArticleController::class,'detail']);
-Route::post('/create',[ArticleController::class,'create']);
+Route::post('/create',[ArticleController::class,'add']);
 Route::post('/renew/{id}',[ArticleController::class,'update']);
 Route::delete('/delete/{id}',[ArticleController::class,'destroy']);
 });
-
 
 Route::post('/add',[CommentController::class,'create']);
 Route::post('/post',[CommentController::class,'post']);

@@ -9,17 +9,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ArticleImage extends Model
 {
-    use SoftDeletes;
+    protected $table = 'table_article_image'; // Specify the correct table name here
 
-    protected $table = 'table_article_image';
+    protected $fillable = ['image', 'article_id'];
 
-    protected $fillable = [
-        'article_id',
-        'image',
-    ];
-
+    // Define the inverse relationship with Article model (one-to-one)
     public function article()
     {
-        return $this->belongsTo(Article::class, 'article_id');
+        return $this->belongsTo(Article::class);
     }
 }
