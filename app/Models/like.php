@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class like extends Model
 {
-protected $fillable = [
+
+     use HasFactory;
+
+
+     protected $fillable = [
         'article_id',
         'member_id',
         'created_at',

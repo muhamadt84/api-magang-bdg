@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\TableCategoryController;
 
@@ -48,12 +49,11 @@ Route::post('/renew/{id}',[ArticleController::class,'update']);
 Route::delete('/delete/{id}',[ArticleController::class,'destroy']);
 });
 
-
+Route::get('/list',[CommentController::class,'index']);
 Route::post('/add',[CommentController::class,'create']);
 Route::post('/post',[CommentController::class,'post']);
-Route::get('/display',[CommentController::class,'index']);
+Route::get('/show',[CommentController::class,'index']);
 Route::get('/specific/{id}',[CommentController::class,'detail']);
 
 
-Route::post('/generate-app-token', [AuthController::class, 'generateAppToken']);
 

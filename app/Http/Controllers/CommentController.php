@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Validator;
-use App\Http\Controllers\CommentController;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
 {
@@ -35,7 +35,7 @@ class CommentController extends Controller
                 // 'per_page' => $posts->perPage(),
                 // 'total_data' => $posts->total(),
                 // 'last_page' => $posts->lastPage(),
-                'data' => $Comment->items(),
+                'data' => $Comment,
             ], 200);
     
         } catch (Exception $e) {
@@ -46,34 +46,111 @@ class CommentController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function create(Request $request)
     {
-        //define validation rules
-        $validator = Validator::make($request->all(), [
-            'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'title'     => 'required',
-            'content'   => 'required',
+        $validated = $request->validate([
+            'article_id' => 'required',
+            'comment' => 'required',
+            'member_id' => 'required'
         ]);
-
-        //check if validation fails
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        //upload image
-        $image = $request->file('image');
-        $image->storeAs('public/posts', $image->hashName());
-
-        //create post
-        $post = Post::create([
-            'image'     => $image->hashName(),
-            'title'     => $request->title,
-            'content'   => $request->content,
-        ]);
-
-        //return response
-        return new Comment(true, 'Data Post Berhasil Ditambahkan!', $post);
+    
+        $Comment = new Comment;
+        $Comment->article_id= $validated['article_id'];
+        $Comment->comment= $validated['comment'];
+        $Comment->member_id = $validated['member_id'];
+    
+        $Comment->save();
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment Berhasil Disimpan!',
+            'data' => $Comment,
+        ], 201);
     }
+    
+
+    /**
+     * Store a newly created resource in storage.
+     */
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        $Comment= Comment::with('writer:id,username')->findOrFail($id);
+        $Comment->makeHidden(['updated_at', 'deleted_at']);
+             if ($Comment) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Detail Post!',
+                'data'    => $Comment
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post Tidak Ditemukan!',
+                'data' => (object)[],
+            ], 401);
+        }
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        // Define validation rules
+        $validator = Validator::make($request->all(), [
+            'article_id' => 'required',
+            'comment' => 'required',
+            'member_id' => 'required'
+        ]);
+    
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors(),
+            ], 422);
+        }
+    
+        // Find Comment by ID
+        $Comment = Comment::find($id);
+    
+        // Check if Comment exists
+        if (!$Comment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Comment Tidak Ditemukan!',
+                'data' => (object)[],
+            ], 404);
+        }
+    
+        // Update the Comment fields
+        $Comment->article_id= $validated['article_id'];
+        $Comment->comment= $validated['comment'];
+        $Comment->member_id = $validated['member_id'];
+
+    
+        // Save the changes
+        $Comment->save();
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment Berhasil Diupdate!',
+            'data' => $Comment,
+        ], 200);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id)
     {
         $Comment = Comment::find($id);
