@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Post extends Model
+
+class Product extends Model
 {
-    use softdeletes;
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * fillable
@@ -18,6 +20,7 @@ class Post extends Model
     protected $fillable = [
         'name',
         'category_id',
+        'description',
         'price',
         'discount',
         'rating',
@@ -29,12 +32,4 @@ class Post extends Model
 
     ];
 
-    /**
-     * Get the writer that owns the post
-     *
-     *@return BelongsTo*/
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(TableCategory::class,'categories_id', 'id');
-    }
 }
