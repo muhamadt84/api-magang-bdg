@@ -36,7 +36,8 @@ Route::delete('/destroy/{id}',[ArticleController::class,'destroy']);
 });
 
 Route::post('/store',[ProductController::class,'create']);
-Route::post('/post',[ProductController::class,'post']);
+Route::post('/create',[ProductController::class,'create']);
+Route::get('/show',[ProductController::class,'index']);
 Route::get('/list',[ProductController::class,'index']);
 Route::get('/detail/{id}',[ProductController::class,'detail']);
 

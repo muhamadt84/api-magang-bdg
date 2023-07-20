@@ -36,7 +36,7 @@ class ProductController extends Controller
                 // 'per_page' => $posts->perPage(),
                 // 'total_data' => $posts->total(),
                 // 'last_page' => $posts->lastPage(),
-                'data' => $Product->items(),
+                'data' => $Product,
             ], 200);
     
         } catch (Exception $e) {
@@ -47,7 +47,7 @@ class ProductController extends Controller
         }
     }
 
-    public function post(Request $request)
+    public function create(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|max:255',
@@ -63,8 +63,8 @@ class ProductController extends Controller
     
         $Product = new Product;
         $Product->name = $validated['name'];
+        $Product->category_id = $validated['category_id'];
         $Product->description = $validated['description'];
-        $Product->categori_id = $validated['categori_id'];
         $Product->price = $validated['price'];
         $Product->discount = $validated['discount'];
         $Product->rating = $validated['rating'];
@@ -86,7 +86,7 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Product Berhasil Disimpan!',
-            'data' => $Product,
+            'data' => $Product
         ], 201);
     }
     
@@ -148,8 +148,8 @@ class ProductController extends Controller
         // Define validation rules
         $validator = Validator::make($request->all(), [
             'nama' => 'required|max:255',
-            'description' => 'required',
             'category_id' => 'required',
+            'description' => 'required',
             'price' => 'required',
             'discount' => 'required',
             'rating' => 'required',
@@ -180,8 +180,8 @@ class ProductController extends Controller
     
         // Update the product fields
         $Product->nama = $Product->input('nama');
-        $Product->descryption = $Product->input('descryption');
-        $Product->categori_id = $Product->input('categori_id');
+        $Product->category_id = $Product->input('category_id');
+        $Product->description = $Product->input('description');
         $Product->price = $Product->input('price');
         $Product->discount = $Product->input('discount');
         $Product->rating = $Product->input('rating');

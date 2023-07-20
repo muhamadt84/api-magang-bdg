@@ -17,7 +17,9 @@ class Product extends Model
      *
      * @var array
      */
-    protected $fillable = [
+    protected $table = 'table_product';
+    protected $fillable 
+     = [
         'name',
         'category_id',
         'description',
@@ -26,10 +28,31 @@ class Product extends Model
         'rating',
         'brand',
         'member_id',
-        'created_at',
-        'updated_at',
+        'image'
 
-
+       
     ];
+
+    
+    public function create(UploadedFile $file)
+        {
+            $request = new Request(['image' => $file]);
+            $validator = $request->validate([
+                'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+    
+            $imagePath = $file->store('public/images');
+    
+            // Dapatkan URL dari path gambar
+            $imageLink = url(Storage::url($imagePath));
+    
+            // Simpan informasi gambar ke tabel 'product_images'
+            $productimage = new ProductImage;
+            $productimage->image_path = $imagePath;
+            $productimage->image_link = $imageLink;
+            $productimage->save();
+    
+            return $productimage->image_path;
+        }
 
 }

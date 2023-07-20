@@ -9,7 +9,7 @@ use App\Http\Controllers\ProductImageController;
 
 class ProductImageController extends Controller
 {
-    public function storeImage(UploadedFile $file)
+    public function create(UploadedFile $file)
         {
             $request = new Request(['image' => $file]);
             $validator = $request->validate([
@@ -21,7 +21,7 @@ class ProductImageController extends Controller
             // Dapatkan URL dari path gambar
             $imageLink = url(Storage::url($imagePath));
     
-            // Simpan informasi gambar ke tabel 'table_article_image'
+            // Simpan informasi gambar ke tabel 'product_images'
             $productimage = new ProductImage;
             $productimage->image_path = $imagePath;
             $productimage->image_link = $imageLink;

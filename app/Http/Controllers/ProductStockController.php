@@ -132,14 +132,8 @@ class ProductStockController extends Controller
     {
         // Define validation rules
         $validator = Validator::make($request->all(), [
-            'nama' => 'required|max:255',
-            'description' => 'required',
-            'categori_id' => 'required',
-            'price' => 'required',
-            'discount' => 'required',
-            'rating' => 'required',
-            'brand' => 'required',
-            'member_id' => 'required',
+            'qty' => 'required',
+            'product_id' => 'required',
             'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
@@ -164,14 +158,8 @@ class ProductStockController extends Controller
         }
     
         // Update the article fields
-        $Product->nama = $Product->input('nama');
-        $Product->descryption = $Product->input('descryption');
-        $Product->categori_id = $Product->input('categori_id');
-        $Product->price = $Product->input('price');
-        $Product->discount = $Product->input('discount');
-        $Product->rating = $Product->input('rating');
-        $Product->brand = $Product->input('brand');
-        $Product->member_id = $Product->input('member_id');
+        $Product->product_id = $validated['product_id'];
+        $Product->qty = $validated['qty'];
 
     
         if ($request->hasFile('image')) {
