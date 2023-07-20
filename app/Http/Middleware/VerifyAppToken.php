@@ -10,7 +10,7 @@ class VerifyAppToken
 {
     public function handle($request, Closure $next)
     {
-        $appToken = $request->header('APP-TOKEN');
+        $appToken = $request->header('app-token');
         
         if ($appToken !== 'your_app_token_here') {
             return response()->json([

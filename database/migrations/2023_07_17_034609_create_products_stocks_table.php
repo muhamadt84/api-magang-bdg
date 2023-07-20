@@ -11,26 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('table_member', function (Blueprint $table) {
+        Schema::create('ProductsStocks', function (Blueprint $table) {
             $table->id();
-            $table->string('fullname');
-            $table->string('username');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->integer('product_id');
+            $table->text('qty');
             $table->timestamps();
-            $table->enum('deleted_at', ['0', '1']);
-
+            $table->enum('deleted', ['0', '1']);
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('ProductsStocks');
     }
 };
