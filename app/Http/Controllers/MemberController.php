@@ -14,7 +14,18 @@ class MemberController extends Controller
      * Register a new user.
      */
     
-    
+     public function index()
+     {
+        
+         $table_member = Members::all();
+ 
+         return response()->json([
+             'success' => true,
+             'data'    => $table_member,
+             'users' => $table_member,
+         ]);
+     }
+
      public function register(Request $request)
      {
          $table_member = new Members;
@@ -38,14 +49,14 @@ class MemberController extends Controller
      
         
 
-         $user = new Members();
-         $user->fullname = $request->input('fullname');
-         $user->username = $request->input('username');
-         $user->email = $request->input('email');
-         $user->password = bcrypt($request->input('password'));
-         $user->save();
+         $table_member = new Members();
+         $table_member->fullname = $request->input('fullname');
+         $table_member->username = $request->input('username');
+         $table_member->email = $request->input('email');
+         $table_member->password = bcrypt($request->input('password'));
+         $table_member->save();
      
-         $token = $user->createToken('app-token')->plainTextToken;
+         $token = $table_member->createToken('app-token')->plainTextToken;
      
          return response()->json([
              'success' => true,
@@ -66,13 +77,13 @@ class MemberController extends Controller
 
         if (Auth::attempt($credentials)) {
             $table_member = Auth::members();
-            $apptoken = $table_member->createToken('APP-TOKEN')->plainTextToken;
+            $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
 
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
                 'member' => $table_member,
-                'token' => $apptoken,
+                'token' => $token,
             ]);
         } else {
             return response()->json([
@@ -85,16 +96,7 @@ class MemberController extends Controller
     /**
      * Get a list of all members.
      */
-    public function index()
-    {
-        
-        $table_member = Members::all();
-
-        return response()->json([
-            'success' => true,
-            'users' => $table_member,
-        ]);
-    }
+    
 
     /**
      * Get the details of a specific member.
@@ -106,8 +108,8 @@ class MemberController extends Controller
 
         return response()->json([
             'success' => true,
-            'user' => $table_member,
-        ]);
+            'data'    => $table_member,
+        ], 200);
     }
 
     /**
@@ -117,16 +119,16 @@ class MemberController extends Controller
     {
         
         $validator = Validator::make($request->all(), [
-            'member_id' => 'required',
-            'firstname' => 'required',
-            'lastname' => 'required',
-            'dob' => 'required' ,
-            'gender' => 'required',
-            'address' => 'required',
-            'image' => 'required',
-            'bio' => 'required',
-            'highschool' => 'required',
-            'phone_number' => 'required',
+            'member_id' => 'required|sometimes',
+            'firstname' => 'required|sometimes',
+            'lastname' => 'required|sometimes',
+            'dob' => 'required|sometimes' ,
+            'gender' => 'required|sometimes',
+            'address' => 'required|sometimes',
+            'image' => 'required|sometimes',
+            'bio' => 'required|sometimes',
+            'highschool' => 'required|sometimes',
+            'phone_number' => 'required|sometimes',
         ]);
 
         if ($validator->fails()) {
@@ -136,7 +138,7 @@ class MemberController extends Controller
             ], 422);
         }
 
-        $table_member = Member::findOrFail($id);
+        $table_member = Members::findOrFail($id);
         $table_member->fullname = $request->input('fullname');
         $table_member->username = $request->input('username');
         $table_member->email = $request->input('email');
@@ -159,7 +161,7 @@ class MemberController extends Controller
      */
     public function destroy(string $id)
     {
-        
+         $table_member = new Members;
         $table_member = Members::findOrFail($id);
         $table_member->delete();
 
