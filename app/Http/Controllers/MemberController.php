@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Members;
 use Illuminate\Http\Request;
+use App\Models\MembersDetail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -72,11 +73,10 @@ class MemberController extends Controller
      */
     public function login(Request $request)
     {
-        
-        $credentials = $request->only('email', 'password');
+        $email = $request->input('email');
+        $table_member = Members::where('email', $email)->first();
 
-        if (Auth::attempt($credentials)) {
-            $table_member = Auth::members();
+        if ($table_member) {
             $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
 
             return response()->json([
@@ -85,12 +85,12 @@ class MemberController extends Controller
                 'member' => $table_member,
                 'token' => $token,
             ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid email or password',
-            ], 401);
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid email or member not found',
+        ], 401);
     }
 
     /**
@@ -138,21 +138,22 @@ class MemberController extends Controller
             ], 422);
         }
 
-        $table_member = Members::findOrFail($id);
-        $table_member->fullname = $request->input('fullname');
-        $table_member->username = $request->input('username');
-        $table_member->email = $request->input('email');
+        $table_member_detail = MembersDetail::findOrFail($id);
+        $table_member_detail->fullname = $validate->input('fullname');
+        $table_member_detail->username = $validate->input('username');
+        $table_member_detail->email = $validate->input('email');
 
         if ($request->has('password')) {
-            $table_member->password = bcrypt($request->input('password'));
+            $table_member_detail->password = bcrypt($request->input('password'));
         }
 
-        $table_member->save();
-
+        $table_member_detail->save();
+        
+        
         return response()->json([
             'success' => true,
             'message' => 'Member updated successfully',
-            'member' => $table_member,
+            'member' => $table_member_detail,
         ]);
     }
 
