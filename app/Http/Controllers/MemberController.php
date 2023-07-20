@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Member;
+
+use App\Models\Members;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class UserController extends Controller
+class MemberController extends Controller
 {
     /**
      * Register a new user.
@@ -16,17 +17,15 @@ class UserController extends Controller
     
      public function register(Request $request)
      {
-         if (!$request->app_token) {
-             return "app token required";
-         } elseif ($request->app_token != "token_yang_benar") {
-             return "app token salah";
-         }
+         $table_member = new Members;
+         
+         
      
        
          $validator = Validator::make($request->all(), [
              'fullname' => 'required',
              'username' => 'required',
-             'email' => 'required|email|unique:members',
+             'email' => 'required|email|unique:table_member',
              'password' => 'required|min:6',
          ]);
      
@@ -37,7 +36,9 @@ class UserController extends Controller
              ], 422);
          }
      
-         $user = new User();
+        
+
+         $user = new Members();
          $user->fullname = $request->input('fullname');
          $user->username = $request->input('username');
          $user->email = $request->input('email');
@@ -49,7 +50,7 @@ class UserController extends Controller
          return response()->json([
              'success' => true,
              'message' => 'Registration successful',
-             'user' => $user,
+             'data' => $table_member,
              'token' => $token,
          ], 201);
      }
@@ -60,17 +61,18 @@ class UserController extends Controller
      */
     public function login(Request $request)
     {
+        
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $token = $user->createToken('app-token')->plainTextToken;
+            $table_member = Auth::members();
+            $apptoken = $table_member->createToken('APP-TOKEN')->plainTextToken;
 
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
-                'user' => $user,
-                'token' => $token,
+                'member' => $table_member,
+                'token' => $apptoken,
             ]);
         } else {
             return response()->json([
@@ -86,11 +88,11 @@ class UserController extends Controller
     public function index()
     {
         
-        $users = User::all();
+        $table_member = Members::all();
 
         return response()->json([
             'success' => true,
-            'users' => $users,
+            'users' => $table_member,
         ]);
     }
 
@@ -99,11 +101,12 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::findOrFail($id);
+        
+        $table_member = Members::findOrFail($id);
 
         return response()->json([
             'success' => true,
-            'user' => $user,
+            'user' => $table_member,
         ]);
     }
 
@@ -112,11 +115,18 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        
         $validator = Validator::make($request->all(), [
-            'fullname' => 'required',
-            'username' => 'required',
-            'email' => 'required|email|unique:members,email,' . $id,
-            'password' => 'nullable|min:6',
+            'member_id' => 'required',
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'dob' => 'required' ,
+            'gender' => 'required',
+            'address' => 'required',
+            'image' => 'required',
+            'bio' => 'required',
+            'highschool' => 'required',
+            'phone_number' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -126,21 +136,21 @@ class UserController extends Controller
             ], 422);
         }
 
-        $user = Member::findOrFail($id);
-        $user->fullname = $request->input('fullname');
-        $user->username = $request->input('username');
-        $user->email = $request->input('email');
+        $table_member = Member::findOrFail($id);
+        $table_member->fullname = $request->input('fullname');
+        $table_member->username = $request->input('username');
+        $table_member->email = $request->input('email');
 
         if ($request->has('password')) {
-            $user->password = bcrypt($request->input('password'));
+            $table_member->password = bcrypt($request->input('password'));
         }
 
-        $user->save();
+        $table_member->save();
 
         return response()->json([
             'success' => true,
             'message' => 'Member updated successfully',
-            'user' => $user,
+            'member' => $table_member,
         ]);
     }
 
@@ -149,9 +159,9 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        dd($request);
-        $user = User::findOrFail($id);
-        $user->delete();
+        
+        $table_member = Members::findOrFail($id);
+        $table_member->delete();
 
         return response()->json([
             'success' => true,
