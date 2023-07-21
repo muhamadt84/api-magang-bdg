@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('table_article_image', function (Blueprint $table) {
             $table->id();
-            $table->integer('article_id')->default(0);
-            $table->text('image')->nullable();
+            $table->integer('article_id');
+            $table->text('image');
             $table->timestamps();
-            $table->softDeletes();
+            $table->enum('deleted', ['0', '1']);
+
             
             // $table->foreign('article_id')->references('id')->on('articles');
         });
