@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\ArticleImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -25,17 +26,13 @@ class ArticleController extends Controller
                     'errors' => $validator->errors()
                 ], 400);
             }
-    
+            
             $article = Article::paginate($perPage);
-            $article->makeHidden(['updated_at', 'deleted']);
+            $article->makeHidden(['updated_at', 'deleted','deleted_at']);
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua Article!',
-                // 'current_page' => $posts->currentPage(),
-                // 'per_page' => $posts->perPage(),
-                // 'total_data' => $posts->total(),
-                // 'last_page' => $posts->lastPage(),
-                'data' => $article->items(),
+                'data' => $article->loadMissing('image'),
             ], 200);
     
         } catch (Exception $e) {
@@ -46,11 +43,12 @@ class ArticleController extends Controller
         }
     }
 
-    public function create(Request $request)
+  
+    public function add(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|max:255',
-            'descryption' => 'required',
+            'description' => 'required',
             'member_id' => 'required',
             'categori_id' => 'required',
             'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -58,30 +56,36 @@ class ArticleController extends Controller
     
         $article = new Article;
         $article->title = $validated['title'];
-        $article->description = $validated['descryption'];
+        $article->description = $validated['description'];
         $article->member_id = $validated['member_id'];
         $article->categori_id = $validated['categori_id'];
-        $article->total_like = 0; // Set nilai awal total_like menjadi 0
-        $article->total_comment = 0; // Set nilai awal total_comments menjadi 0
-        if ($request->file) {
-            // Simpan file gambar melalui ArticleImageController
-            $imageController = new ArticleImageController;
-            $imagePath = $imageController->storeImage($request->file);
-            $imagePath = $request->file('file')->store('public/images');
-            // Dapatkan URL dari path gambar
-            $imageLink = url(Storage::url($imagePath));
-            $imageLink = '';
-            $article->image = $imageLink;
-        }
+        $article->total_like = 0;
+        $article->total_comment = 0;
     
         $article->save();
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imagePath = $image->store('public/images');
     
+            // Create an ArticleImage model to associate the image with the article
+            $articleImage = new ArticleImage;
+            $articleImage->image = $imagePath;
+    
+            // Associate the image with the article
+            $article->image()->save($articleImage);
+             $imageUrl = url(Storage::url($article->image->image));
+             $article->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
+        }
+        // $article->loadMissing('image');
+        $article->makeHidden(['updated_at', 'deleted_at']);
         return response()->json([
             'success' => true,
             'message' => 'Artikel Berhasil Disimpan!',
-            'data' => $article,
+            'data' => $article->loadMissing('image'),
         ], 201);
     }
+    
     
     
 
@@ -92,24 +96,6 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
-    {
-        $article = Article::with('writer:id,username')->findOrFail($id);
-        $article->makeHidden(['updated_at', 'deleted_at']);
-             if ($article) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Detail Post!',
-                'data'    => $article
-            ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Post Tidak Ditemukan!',
-                'data' => (object)[],
-            ], 401);
-        }
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -118,11 +104,12 @@ class ArticleController extends Controller
     {
         $article = Article::findOrFail($id);
         $article->makeHidden(['updated_at', 'deleted_at']);
+        $article->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
              if ($article) {
             return response()->json([
                 'success' => true,
-                'message' => 'Detail Post!',
-                'data'    => $article
+                'message' => 'Detail Article!',
+                'data'    => $article->loadMissing('image'),
             ], 200);
         } else {
             return response()->json([
@@ -138,62 +125,72 @@ class ArticleController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
-    {
-        // Define validation rules
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|max:255',
-            'descryption' => 'required',
-            'member_id' => 'required',
-            'categori_id' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-    
-        // Check if validation fails
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors(),
-            ], 422);
-        }
-    
-        // Find article by ID
-        $article = Article::find($id);
-    
-        // Check if article exists
-        if (!$article) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Article Tidak Ditemukan!',
-                'data' => (object)[],
-            ], 404);
-        }
-    
-        // Update the article fields
-        $article->title = $request->input('title');
-        $article->descryption = $request->input('descryption');
-        $article->member_id = $request->input('member_id');
-        $article->categori_id = $request->input('categori_id');
-    
-        if ($request->hasFile('image')) {
-            // Simpan file gambar melalui ArticleImageController
-            $imageController = new ArticleImageController;
-            $imagePath = $imageController->storeImage($request->file('image'));
-    
-            // Dapatkan URL dari path gambar
-            $imageLink = url(Storage::url($imagePath));
-    
-            $article->image = $imageLink;
-        }
-    
-        // Save the changes
-        $article->save();
-    
+{
+    // Define validation rules
+    $validator = Validator::make($request->all(), [
+        'title' => 'required|max:255',
+        'description' => 'required',
+        'member_id' => 'required',
+        'categori_id' => 'required',
+        'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    // Check if validation fails
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Artikel Berhasil Diupdate!',
-            'data' => $article,
-        ], 200);
+            'success' => false,
+            'message' => $validator->errors(),
+        ], 422);
     }
+
+    // Find article by ID
+    $article = Article::find($id);
+
+    // Check if article exists
+    if (!$article) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Article Tidak Ditemukan!',
+            'data' => (object)[],
+        ], 404);
+    }
+
+    // Update the article fields
+    $article->title = $request->input('title');
+    $article->description = $request->input('description');
+    $article->member_id = $request->input('member_id');
+    $article->categori_id = $request->input('categori_id');
+
+    // Save the changes
+    $article->save();
+
+    // Handle the image upload
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imagePath = $image->store('public/images');
+
+        // Create an ArticleImage model to associate the image with the article
+        $articleImage = new ArticleImage;
+        $articleImage->image = $imagePath;
+
+        // Associate the image with the article
+        $article->image()->save($articleImage);
+        $imageUrl = url(Storage::url($article->image->image));
+    }
+
+    // Load the missing image relationship if it exists
+    $article->loadMissing('image');
+
+    // Make hidden any attributes you want to exclude from the JSON response
+    $article->makeHidden(['updated_at', 'deleted_at']);
+    $article->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
+    return response()->json([
+        'success' => true,
+        'message' => 'Artikel Berhasil Diupdate!',
+        'data' => $article,
+        'image_url' => $imageUrl ?? null, // Add image_url only if an image was uploaded
+    ], 200);
+}
 
     /**
      * Remove the specified resource from storage.
@@ -210,7 +207,7 @@ class ArticleController extends Controller
             ], 404);
         }
     
-        if ($article->deleted == 1) {
+        if ($article->deleted_at) {
             $article->forceDelete();
     
             return response()->json([
@@ -219,7 +216,6 @@ class ArticleController extends Controller
                 'data' => (object)[],
             ], 200);
         } else {
-            $article->deleted = 1;
             $article->delete();
     
             return response()->json([

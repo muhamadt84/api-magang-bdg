@@ -7,7 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class ArticleImage extends Model
 {
-    use HasFactory;
-    protected $table = 'table_article_image';
-    protected $fillable = ['image_path', 'image_link'];
+    protected $table = 'table_article_image'; // Specify the correct table name here
+
+    protected $fillable = ['image', 'article_id'];
+
+    // Define the inverse relationship with Article model (one-to-one)
+    public function article()
+    {
+        return $this->belongsTo(Article::class);
+    }
 }
