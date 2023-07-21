@@ -18,7 +18,7 @@ class TableCategoryController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->query('limit', 10); // Menentukan jumlah item per halaman, defaultnya 10
-        
+    
         try {
             $validator = Validator::make($request->all(), [
                 'limit' => 'integer|min:1|max:100' // Validasi input limit
@@ -27,8 +27,8 @@ class TableCategoryController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid Request',
-                    'errors' => $validator->errors()
+                    'message' => 'Permintaan Tidak Valid',
+                    'error' => $validator->errors()
                 ], 400);
             }
     
@@ -36,18 +36,14 @@ class TableCategoryController extends Controller
             $tableCategory->makeHidden(['updated_at', 'deleted']);
             return response()->json([
                 'success' => true,
-                'message' => 'List Semua Posts!',
-                // 'current_page' => $posts->currentPage(),
-                // 'per_page' => $posts->perPage(),
-                // 'total_data' => $posts->total(),
-                // 'last_page' => $posts->lastPage(),
+                'message' => 'Daftar Semua Kategori!',
                 'data' => $tableCategory->items(),
             ], 200);
     
         } catch (Exception $e) {
             return response()->json([
-                'success' => false,
-                'message' => 'Internal Server Error',
+                'succes' => false,
+                'message' => 'Kesalahan Server Internal',
             ], 500);
         }
     }
