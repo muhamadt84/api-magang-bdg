@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
 class Product extends Model
@@ -17,9 +18,10 @@ class Product extends Model
      *
      * @var array
      */
-    protected $table = 'table_product';
-    protected $fillable 
-     = [
+    protected $table = 'products';
+
+    protected $fillable = [
+    
         'name',
         'category_id',
         'description',
@@ -28,31 +30,15 @@ class Product extends Model
         'rating',
         'brand',
         'member_id',
-        'image'
+        'image',
+        'image',
 
-       
     ];
+    
 
-    
-    public function create(UploadedFile $file)
-        {
-            $request = new Request(['image' => $file]);
-            $validator = $request->validate([
-                'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            ]);
-    
-            $imagePath = $file->store('public/images');
-    
-            // Dapatkan URL dari path gambar
-            $imageLink = url(Storage::url($imagePath));
-    
-            // Simpan informasi gambar ke tabel 'product_images'
-            $productimage = new ProductImage;
-            $productimage->image_path = $imagePath;
-            $productimage->image_link = $imageLink;
-            $productimage->save();
-    
-            return $productimage->image_path;
-        }
+    public function image()
+    {
+        return $this->hasOne(ProductImage::class);
+    }
 
 }

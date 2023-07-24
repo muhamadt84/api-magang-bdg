@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use App\Models\ProductStock;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\ProductStockController;
 
 class ProductStockController extends Controller
 {
@@ -23,7 +27,7 @@ class ProductStockController extends Controller
                 ], 400);
             }
     
-            $Product = Product::paginate($perPage);
+            $Product = ProductStock::paginate($perPage);
             $Product->makeHidden(['updated_at', 'deleted']);
             return response()->json([
                 'success' => true,
@@ -43,30 +47,21 @@ class ProductStockController extends Controller
         }
     }
 
-    public function create(Request $request)
+    public function add(Request $request)
     {
         $validated = $request->validate([
-            'qty' => 'required',
             'product_id' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'qty' => 'required',
+            'flag' => 'required',
         ]);
     
-        $Product = new Product;
+        $Product = new ProductStock;
         $Product->product_id = $validated['product_id'];
         $Product->qty = $validated['qty'];
-        if ($request->file) {
-            // Simpan file gambar melalui ProductImageController
-            $imageController = new ProductImageController;
-            $imagePath = $imageController->storeImage($request->file);
-            $imagePath = $request->file('file')->store('public/images');
-            // Dapatkan URL dari path gambar
-            $imageLink = url(Storage::url($imagePath));
-            $imageLink = '';
-            $Product->image = $imageLink;
-        }
+        $Product->flag = $validated['flag'];
+        
     
         $Product->save();
-    
         return response()->json([
             'success' => true,
             'message' => 'Product Berhasil Disimpan!',
@@ -83,31 +78,14 @@ class ProductStockController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
-    {
-        $Product = Product::with('writer:id,username')->findOrFail($id);
-        $Product->makeHidden(['updated_at', 'deleted_at']);
-             if ($Product) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Detail Post!',
-                'data'    => $Product
-            ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Post Tidak Ditemukan!',
-                'data' => (object)[],
-            ], 401);
-        }
-    }
+   
 
     /**
      * Show the form for editing the specified resource.
      */
     public function detail($id)
     {
-        $Product = Product::findOrFail($id);
+        $Product = ProductStock::findOrFail($id);
         $Product->makeHidden(['updated_at', 'deleted_at']);
              if ($Product) {
             return response()->json([
@@ -134,7 +112,7 @@ class ProductStockController extends Controller
         $validator = Validator::make($request->all(), [
             'qty' => 'required',
             'product_id' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'flag' => 'required',
         ]);
     
         // Check if validation fails
@@ -146,7 +124,7 @@ class ProductStockController extends Controller
         }
     
         // Find article by ID
-        $Product = Product::find($id);
+        $Product = ProductStock::find($id);
     
         // Check if article exists
         if (!$Product) {
@@ -160,18 +138,7 @@ class ProductStockController extends Controller
         // Update the article fields
         $Product->product_id = $validated['product_id'];
         $Product->qty = $validated['qty'];
-
-    
-        if ($request->hasFile('image')) {
-            // Simpan file gambar melalui ProductImageController
-            $imageController = new ProductImageController;
-            $imagePath = $imageController->storeImage($request->file('image'));
-    
-            // Dapatkan URL dari path gambar
-            $imageLink = url(Storage::url($imagePath));
-    
-            $Product->image = $imageLink;
-        }
+        $Product->flag = $validated['flag'];
     
         // Save the changes
         $Product->save();
@@ -188,7 +155,7 @@ class ProductStockController extends Controller
      */
     public function destroy($id)
     {
-        $Product = Product::find($id);
+        $Product = ProductStock::find($id);
     
         if (!$Product) {
             return response()->json([

@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImageController;
@@ -26,16 +29,12 @@ class ProductController extends Controller
                     'errors' => $validator->errors()
                 ], 400);
             }
-    
+            
             $Product = Product::paginate($perPage);
-            $Product->makeHidden(['updated_at', 'deleted']);
+            $Product->makeHidden(['updated_at', 'deleted','deleted_at']);
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua Product!',
-                // 'current_page' => $posts->currentPage(),
-                // 'per_page' => $posts->perPage(),
-                // 'total_data' => $posts->total(),
-                // 'last_page' => $posts->lastPage(),
                 'data' => $Product,
             ], 200);
     
@@ -47,7 +46,9 @@ class ProductController extends Controller
         }
     }
 
-    public function create(Request $request)
+    
+    
+public function create(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|max:255',
@@ -70,27 +71,30 @@ class ProductController extends Controller
         $Product->rating = $validated['rating'];
         $Product->brand = $validated['brand'];
         $Product->member_id = $validated['member_id'];
-        if ($request->file) {
-            // Simpan file gambar melalui ProductImageController
-            $imageController = new ProductImageController;
-            $imagePath = $imageController->storeImage($request->file);
-            $imagePath = $request->file('file')->store('public/images');
-            // Dapatkan URL dari path gambar
-            $imageLink = url(Storage::url($imagePath));
-            $imageLink = '';
-            $Product->image = $imageLink;
-        }
     
         $Product->save();
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imagePath = $image->store('public/images');
     
+            // Create an ProductImage model to associate the image with the Product
+            $ProductImage = new ProductImage;
+            $ProductImage->image = $imagePath;
+    
+            // Associate the image with the Product
+            $Product->image()->save($ProductImage);
+             $imageUrl = url(Storage::url($Product->image->image));
+             $ProductImage->image;
+        }
+        // $Product->loadMissing('image');
+        $Product->makeHidden(['updated_at', 'deleted_at']);
         return response()->json([
             'success' => true,
             'message' => 'Product Berhasil Disimpan!',
-            'data' => $Product
+            'data' => $Product->loadMissing('image'),
         ], 201);
     }
-    
-
     /**
      * Store a newly created resource in storage.
      */
@@ -106,7 +110,7 @@ class ProductController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Detail Post!',
-                'data'    => $Product
+                'data'    => $Product,
             ], 200);
         } else {
             return response()->json([
@@ -124,11 +128,12 @@ class ProductController extends Controller
     {
         $Product = Product::findOrFail($id);
         $Product->makeHidden(['updated_at', 'deleted_at']);
+        $Product->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
              if ($Product) {
             return response()->json([
                 'success' => true,
                 'message' => 'Detail Post!',
-                'data'    => $Product
+                'data'    => $Product->loadMissing('image'),
             ], 200);
         } else {
             return response()->json([
@@ -143,72 +148,81 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
-    {
-        // Define validation rules
-        $validator = Validator::make($request->all(), [
-            'nama' => 'required|max:255',
-            'category_id' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'discount' => 'required',
-            'rating' => 'required',
-            'brand' => 'required',
-            'member_id' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-    
-        // Check if validation fails
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors(),
-            ], 422);
-        }
-    
-        // Find product by ID
-        $Product = Product::find($id);
-    
-        // Check if product exists
-        if (!$Product) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Product Tidak Ditemukan!',
-                'data' => (object)[],
-            ], 404);
-        }
-    
-        // Update the product fields
-        $Product->nama = $Product->input('nama');
-        $Product->category_id = $Product->input('category_id');
-        $Product->description = $Product->input('description');
-        $Product->price = $Product->input('price');
-        $Product->discount = $Product->input('discount');
-        $Product->rating = $Product->input('rating');
-        $Product->brand = $Product->input('brand');
-        $Product->member_id = $Product->input('member_id');
+    public function update(Request $request)
+{
+    // Define validation rules
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|max:255',
+        'category_id' => 'required',
+        'description' => 'required',
+        'price' => 'required',
+        'discount' => 'required',
+        'rating' => 'required',
+        'brand' => 'required',
+        'member_id' => 'required',
+        'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-    
-        if ($request->hasFile('image')) {
-            // Simpan file gambar melalui ProductImageController
-            $imageController = new ProductImageController;
-            $imagePath = $imageController->storeImage($request->file('image'));
-    
-            // Dapatkan URL dari path gambar
-            $imageLink = url(Storage::url($imagePath));
-    
-            $Product->image = $imageLink;
-        }
-    
-        // Save the changes
-        $Product->save();
-    
+    // Check if validation fails
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Product Berhasil Diupdate!',
-            'data' => $Product,
-        ], 200);
+            'success' => false,
+            'message' => $validator->errors(),
+        ], 422);
     }
+
+    // Find Product by ID
+    $Product = Product::find($id);
+
+    // Check if Product exists
+    if (!$Product) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Product Tidak Ditemukan!',
+            'data' => (object)[],
+        ], 404);
+    }
+
+    // Update the Product fields
+    $Product->name = $request->input['name'];
+    $Product->category_id = $request->input['category_id'];
+    $Product->description = $request->input['description'];
+    $Product->price = $request->input['price'];
+    $Product->discount = $request->input['discount'];
+    $Product->rating = $request->input['rating'];
+    $Product->brand = $request->input['brand'];
+    $Product->member_id = $request->input['member_id'];
+
+    // Save the changes
+    $Product->save();
+
+    // Handle the image upload
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imagePath = $image->store('public/images');
+
+        // Create an ProductImage model to associate the image with the Product
+        $ProductImage = new ProductImage;
+        $ProductImage->image = $imagePath;
+
+        // Associate the image with the Product
+        $Product->image()->save($ProductImage);
+        $imageUrl = url(Storage::url($Product->image->image));
+    }
+
+    // Load the missing image relationship if it exists
+    $Product->loadMissing('image');
+
+    // Make hidden any attributes you want to exclude from the JSON response
+    $Product->makeHidden(['updated_at', 'deleted_at']);
+    $Product->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
+    return response()->json([
+        'success' => true,
+        'message' => 'Product Berhasil Diupdate!',
+        'data' => $Product,
+        'image_url' => $imageUrl ?? null, // Add image_url only if an image was uploaded
+    ], 200);
+}
 
     /**
      * Remove the specified resource from storage.
@@ -225,7 +239,7 @@ class ProductController extends Controller
             ], 404);
         }
     
-        if ($Product->deleted == 1) {
+        if ($Product->deleted_at) {
             $Product->forceDelete();
     
             return response()->json([
@@ -234,7 +248,6 @@ class ProductController extends Controller
                 'data' => (object)[],
             ], 200);
         } else {
-            $Product->deleted = 1;
             $Product->delete();
     
             return response()->json([

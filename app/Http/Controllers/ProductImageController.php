@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ProductImageController;
 
 class ProductImageController extends Controller

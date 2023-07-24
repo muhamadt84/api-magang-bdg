@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\ProductStockController;
 use App\Http\Controllers\TableCategoryController;
 
 /*
@@ -43,11 +45,13 @@ Route::middleware('auth.app-token')->group(function () {
   Route::get('/detailnya/{id}',[MemberController::class,'show']);
 });
 
-Route::post('/store',[ProductController::class,'create']);
-Route::post('/create',[ProductController::class,'create']);
-Route::get('/show',[ProductController::class,'index']);
-Route::get('/list',[ProductController::class,'index']);
-Route::get('/detail/{id}',[ProductController::class,'detail']);
+Route::post('/membuatproduk',ProductController::class . '@create');
+Route::get('/listproduk',\App\Http\Controllers\ProductController::class . '@index');
+Route::get('/detailproduk/{id}',[ProductController::class,'detail']);
+Route::put('/updateproduk',[ProductController::class,'update']);
+Route::delete('/deleteproduk',[ProductController::class,'destroy']);
+Route::post('/membuatstock',[ProductStockController::class,'add']);
+
 
 
 Route::post('/generate-app-token', [AuthController::class, 'generateAppToken']);
