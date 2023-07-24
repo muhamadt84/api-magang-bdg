@@ -31,7 +31,7 @@ Route::middleware('auth.app-token')->group(function () {
   
   Route::get('/show',[ArticleController::class,'index']);
   Route::get('/detail/{id}',[ArticleController::class,'detail']);
-  Route::post('/create',[ArticleController::class,'create']);
+  Route::post('/create',[ArticleController::class,'add']);
   Route::post('/renew/{id}',[ArticleController::class,'update']);
   Route::delete('/delete/{id}',[ArticleController::class,'destroy']);
 

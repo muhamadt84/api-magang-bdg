@@ -27,7 +27,7 @@ class TableCategoryController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Permintaan Tidak Valid',
+                    'message' => 'Bad Request',
                     'error' => $validator->errors()
                 ], 400);
             }
@@ -43,7 +43,7 @@ class TableCategoryController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'succes' => false,
-                'message' => 'Kesalahan Server Internal',
+                'message' => 'Internal Server Error',
             ], 500);
         }
     }
