@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Comment extends Model
 {
-
+    
     use HasFactory, SoftDeletes;
 
     /**
@@ -21,9 +21,8 @@ class Comment extends Model
         'id',
         'article_id',
         'comment',
-        'member_id',
-        'created_at',
-        'deleted_at'
+        'member_id'
+      
 
 
     ];

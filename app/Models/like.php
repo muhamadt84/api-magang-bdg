@@ -14,8 +14,7 @@ class like extends Model
 
      protected $fillable = [
         'article_id',
-        'member_id',
-        'created_at',
+        'member_id'
 
 ];
 }
