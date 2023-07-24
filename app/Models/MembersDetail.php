@@ -18,7 +18,8 @@ class MembersDetail extends Authenticatable
      * @var array<int, string>
      */
 
-    protected $table = 'table_member_detail';
+    
+     protected $table = 'table_member_detail';
 
     protected $fillable = [
         'name',

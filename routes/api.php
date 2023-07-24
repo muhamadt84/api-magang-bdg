@@ -7,6 +7,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\MembersDetailController;
 use App\Http\Controllers\TableCategoryController;
 
 /*
@@ -37,10 +38,12 @@ Route::delete('/destroy/{id}',[ArticleController::class,'destroy']);
 
 Route::post('/register',[MemberController::class,'register']);
 Route::post('/login',[MemberController::class,'login']);
-Route::post('/ubah/{id}',[MemberController::class,'update']);
 Route::delete('/hapus/{id}',[MemberController::class,'destroy']);
 Route::get('/users',[MemberController::class,'index']);
 Route::get('/detailnya/{id}',[MemberController::class,'show']);
+
+
+Route::post('/ubah/{id}',[MemberController::class,'update']);
 });
 
 Route::post('/store',[ProductController::class,'create']);
