@@ -136,6 +136,7 @@ class CommentController extends Controller
         $Comment->article_id= $validated['article_id'];
         $Comment->comment= $validated['comment'];
         $Comment->member_id = $validated['member_id'];
+        $Comment->total_comment = 0;
 
     
         // Save the changes
