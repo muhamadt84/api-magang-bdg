@@ -21,10 +21,14 @@ class MembersDetail extends Authenticatable
     
      protected $table = 'table_member_detail';
 
+    
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'image',
+        'member_id'
     ];
 
     /**
