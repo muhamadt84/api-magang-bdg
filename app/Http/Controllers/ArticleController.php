@@ -134,7 +134,7 @@ class ArticleController extends Controller
             'description' => 'sometimes|required',
             'member_id' => 'sometimes|required',
             'categori_id' => 'sometimes|required',
-            'image' => 'image|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
+            'image.*' => 'image|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
         // Check if validation fails
@@ -196,7 +196,6 @@ class ArticleController extends Controller
             'data' => $article->loadMissing('images'),
         ], 200);
     }
-    
     /**
      * Remove the specified resource from storage.
      */
