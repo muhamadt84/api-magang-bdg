@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('member_id');
             $table->timestamps();
             $table->enum('deleted', ['0', '1']);
+            $table->softDeletes();
 
         });
     }

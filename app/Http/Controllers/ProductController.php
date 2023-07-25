@@ -75,17 +75,16 @@ public function create(Request $request)
         $Product->save();
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imagePath = $image->store('public/images');
+            foreach ($request->file('image') as $image) {
+                $imagePath = $image->store('public/images');
     
-            // Create an ProductImage model to associate the image with the Product
-            $ProductImage = new ProductImage;
-            $ProductImage->image = $imagePath;
+                // Create an ProductImage model to associate the image with the product
+                $ProductImage = new ProductImage;
+                $ProductImage->image = $imagePath;
     
-            // Associate the image with the Product
-            $Product->image()->save($ProductImage);
-             $imageUrl = url(Storage::url($Product->image->image));
-             $ProductImage->image;
+                // Save the product image with the product relationship
+                $Product->images()->save($ProductImage);
+            }
         }
         // $Product->loadMissing('image');
         $Product->makeHidden(['updated_at', 'deleted_at']);
@@ -102,15 +101,15 @@ public function create(Request $request)
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function detail($id)
     {
-        $Product = Product::with('writer:id,username')->findOrFail($id);
+        $Product = Product::findOrFail($id);
         $Product->makeHidden(['updated_at', 'deleted_at']);
              if ($Product) {
             return response()->json([
                 'success' => true,
-                'message' => 'Detail Post!',
-                'data'    => $Product,
+                'message' => 'Detail Product!',
+                'data'    => $Product->loadMissing('image'),
             ], 200);
         } else {
             return response()->json([
@@ -124,26 +123,7 @@ public function create(Request $request)
     /**
      * Show the form for editing the specified resource.
      */
-    public function detail($id)
-    {
-        $Product = Product::findOrFail($id);
-        $Product->makeHidden(['updated_at', 'deleted_at']);
-        $Product->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
-             if ($Product) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Detail Post!',
-                'data'    => $Product->loadMissing('image'),
-            ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Post Tidak Ditemukan!',
-                'data' => (object)[],
-            ], 401);
-        }
-    }
-
+   
 
     /**
      * Update the specified resource in storage.

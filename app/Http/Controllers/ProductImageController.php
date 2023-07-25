@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ProductImageController;
+use App\Http\Requests\StoreProductImageRequest;
+use App\Http\Requests\UpdateProductImageRequest;
 
 class ProductImageController extends Controller
 {
-    public function create(UploadedFile $file)
+    public function storeImage(UploadedFile $file)
         {
             $request = new Request(['image' => $file]);
             $validator = $request->validate([

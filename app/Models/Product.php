@@ -5,20 +5,13 @@ namespace App\Models;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
-
-    /**
-     * fillable
-     *
-     * @var array
-     */
+    use HasFactory;
     protected $table = 'products';
+
 
     protected $fillable = [
     
@@ -31,14 +24,14 @@ class Product extends Model
         'brand',
         'member_id',
         'image',
-        'image',
+        'image'
 
     ];
-    
 
-    public function image()
+
+    public function images()
     {
-        return $this->hasOne(ProductImage::class);
+        return $this->hasMany(ProductImage::class);
     }
-
+    
 }

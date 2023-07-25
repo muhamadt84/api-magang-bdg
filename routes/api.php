@@ -45,8 +45,8 @@ Route::middleware('auth.app-token')->group(function () {
   Route::get('/detailnya/{id}',[MemberController::class,'show']);
 });
 
-Route::post('/membuatproduk',ProductController::class . '@create');
-Route::get('/listproduk',\App\Http\Controllers\ProductController::class . '@index');
+Route::post('/membuatproduk',[ProductController::class,'create']);
+Route::get('/listproduk',[ProductController::class,'index']);
 Route::get('/detailproduk/{id}',[ProductController::class,'detail']);
 Route::put('/updateproduk',[ProductController::class,'update']);
 Route::delete('/deleteproduk',[ProductController::class,'destroy']);
