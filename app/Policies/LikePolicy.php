@@ -6,7 +6,7 @@ use App\Models\Like;
 use App\Models\User;
 use App\Policies\LikePolicy;
 
-class LikePoslicy
+class LikePosaqlicy
 {
     /**
      * Create a new policy instance.

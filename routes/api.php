@@ -51,9 +51,9 @@ Route::post('/add',[CommentController::class,'create']);
 Route::post('/post',[CommentController::class,'post']);
 Route::get('/menampilkan',[CommentController::class,'index']);
 Route::get('/specific/{id}',[CommentController::class,'detail']);
-Route::delete('/deletecomment',[CommentController::class,'destroy']);
+Route::put('/deletecomment/{id}',[CommentController::class,'destroy']);
 
 Route::post('/nambahlike',[LikeController::class,'create']);
-Route::delete('/deletelike',[LikeController::class,'destroy']);
+Route::delete('/deletelike/{id}',[LikeController::class,'destroy']);
 
 Route::post('/generate-app-token', [AuthController::class, 'generateAppToken']);

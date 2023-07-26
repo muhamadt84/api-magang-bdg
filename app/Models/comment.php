@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Comment extends Model
 {
-    
-    use HasFactory, SoftDeletes;
+    use SoftDeletes ;
+    use HasFactory ;
 
     /**
      * fillable

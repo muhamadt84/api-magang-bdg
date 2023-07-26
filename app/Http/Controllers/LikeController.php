@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Like;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -16,46 +17,46 @@ class LikeController extends Controller
             'member_id' => 'required'
         ]);
     
-        $Comment = new Comment;
-        $Comment->article_id= $validated['article_id'];
-        $Comment->member_id = $validated['member_id'];
+        $Like= new Like;
+        $Like->article_id= $validated['article_id'];
+        $Like->member_id = $validated['member_id'];
     
-        $Comment->save();
+        $Like->save();
     
         return response()->json([
             'success' => true,
-            'message' => 'Comment Berhasil Disimpan!',
-            'data' => $Comment,
+            'message' => 'Like Berhasil Disimpan!',
+            'data' => $Like,
         ], 201);
     }
 
     public function destroy($id)
     {
-        $Comment = Comment::find($id);
+        $Like = Like::find($id);
     
-        if (!$Comment) {
+        if (!$Like) {
             return response()->json([
                 'success' => false,
-                'message' => 'Comment not Found !',
+                'message' => 'Like not Found !',
                 'data' => (object)[],
             ], 404);
         }
     
-        if ($Comment->deleted == 1) {
-            $Comment->forceDelete();
+        if ($Like->deleted == 1) {
+            $Like->forceDelete();
     
             return response()->json([
                 'success' => true,
-                'message' => 'Comment Berhasil Dihapus secara permanen!',
+                'message' => 'Like Berhasil Dihapus secara permanen!',
                 'data' => (object)[],
             ], 200);
         } else {
-            $Comment->deleted = 1;
-            $Comment->delete();
+            $Like->deleted = 1;
+            $Like->delete();
     
             return response()->json([
                 'success' => true,
-                'message' => 'Comment Berhasil Dihapus!',
+                'message' => 'Like Berhasil Dihapus!',
                 'data' => (object)[],
             ], 200);
         }
