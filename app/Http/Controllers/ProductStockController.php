@@ -52,13 +52,11 @@ class ProductStockController extends Controller
         $validated = $request->validate([
             'product_id' => 'required',
             'qty' => 'required',
-            'flag' => 'required',
         ]);
     
         $Product = new ProductStock;
         $Product->product_id = $validated['product_id'];
         $Product->qty = $validated['qty'];
-        $Product->flag = $validated['flag'];
         
     
         $Product->save();
@@ -112,7 +110,6 @@ class ProductStockController extends Controller
         $validator = Validator::make($request->all(), [
             'qty' => 'required',
             'product_id' => 'required',
-            'flag' => 'required',
         ]);
     
         // Check if validation fails
@@ -138,7 +135,6 @@ class ProductStockController extends Controller
         // Update the article fields
         $Product->product_id = $validated['product_id'];
         $Product->qty = $validated['qty'];
-        $Product->flag = $validated['flag'];
     
         // Save the changes
         $Product->save();

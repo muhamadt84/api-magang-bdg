@@ -101,9 +101,13 @@ public function create(Request $request)
     /**
      * Display the specified resource.
      */
-    public function detail($id)
+
+     /**
+     * Show the form for editing the specified resource.
+     */
+    public function detail(Request $request)
     {
-        $Product = Product::findOrFail($id);
+        $Product = Product::findOrFail($request);
         $Product->makeHidden(['updated_at', 'deleted_at']);
              if ($Product) {
             return response()->json([
@@ -120,27 +124,25 @@ public function create(Request $request)
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    
    
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
 {
     // Define validation rules
     $validator = Validator::make($request->all(), [
-        'name' => 'required|max:255',
-        'category_id' => 'required',
-        'description' => 'required',
-        'price' => 'required',
-        'discount' => 'required',
-        'rating' => 'required',
-        'brand' => 'required',
-        'member_id' => 'required',
-        'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        'name' => 'sometimes|required|max:255',
+        'category_id' => 'sometimes|required',
+        'description' => 'sometimes|required',
+        'price' => 'sometimes|required',
+        'discount' => 'sometimes|required',
+        'rating' => 'sometimes|required',
+        'brand' => 'sometimes|required',
+        'member_id' => 'sometimes|required',
+        'image' => 'image|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
     // Check if validation fails
@@ -164,30 +166,36 @@ public function create(Request $request)
     }
 
     // Update the Product fields
-    $Product->name = $request->input['name'];
-    $Product->category_id = $request->input['category_id'];
-    $Product->description = $request->input['description'];
-    $Product->price = $request->input['price'];
-    $Product->discount = $request->input['discount'];
-    $Product->rating = $request->input['rating'];
-    $Product->brand = $request->input['brand'];
-    $Product->member_id = $request->input['member_id'];
+    $Product->name = $request->input('name');
+    $Product->category_id = $request->input('category_id');
+    $Product->description = $request->input('description');
+    $Product->price = $request->input('price');
+    $Product->discount = $request->input('discount');
+    $Product->rating = $request->input('rating');
+    $Product->brand = $request->input('brand');
+    $Product->member_id = $request->input('member_id');
 
     // Save the changes
     $Product->save();
 
     // Handle the image upload
     if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $imagePath = $image->store('public/images');
+        $images = $request->file('image');
 
-        // Create an ProductImage model to associate the image with the Product
-        $ProductImage = new ProductImage;
-        $ProductImage->image = $imagePath;
+        // Delete existing images (optional, if you want to replace all images)
+        $Product->images()->delete();
 
-        // Associate the image with the Product
-        $Product->image()->save($ProductImage);
-        $imageUrl = url(Storage::url($Product->image->image));
+        // Upload and save the new images
+        foreach ($images as $image) {
+            $imagePath = $image->store('public/images');
+
+            // Create an ArticleImage model to associate the image with the article
+            $ProductImage = new ProductImage;
+            $ProductImage->image = $imagePath;
+
+            // Associate the image with the article
+            $Product->images()->save($ProductImage);
+        }
     }
 
     // Load the missing image relationship if it exists

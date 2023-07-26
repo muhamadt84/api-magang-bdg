@@ -48,8 +48,8 @@ Route::middleware('auth.app-token')->group(function () {
 Route::post('/membuatproduk',[ProductController::class,'create']);
 Route::get('/listproduk',[ProductController::class,'index']);
 Route::get('/detailproduk/{id}',[ProductController::class,'detail']);
-Route::put('/updateproduk',[ProductController::class,'update']);
-Route::delete('/deleteproduk',[ProductController::class,'destroy']);
+Route::post('/updateproduk/{id}',[ProductController::class,'update']);
+Route::delete('/deleteproduk/{id}',[ProductController::class,'destroy']);
 Route::post('/membuatstock',[ProductStockController::class,'add']);
 
 

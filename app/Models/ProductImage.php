@@ -11,23 +11,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ProductImage extends Model
 {
 
-    use HasFactory;
-
     protected $table = 'product_images';
-    protected $fillable =[
-        
-    'name',
-    'category_id',
-    'description',
-    'price',
-    'discount',
-    'rating',
-    'brand',
-    'member_id',
-    'image',
-    
 
-];
+    protected $fillable = ['product_id','image'];
+
+
+        // Define the inverse relationship with Article model (one-to-one)
 public function Product()
     {
         return $this->belongsTo(Product::class);

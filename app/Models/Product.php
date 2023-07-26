@@ -5,11 +5,13 @@ namespace App\Models;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
-    use HasFactory;
+    use SoftDeletes ;
+    use HasFactory ;
     protected $table = 'products';
 
 
@@ -29,7 +31,7 @@ class Product extends Model
     ];
 
 
-    public function images()
+    public function image()
     {
         return $this->hasMany(ProductImage::class);
     }
