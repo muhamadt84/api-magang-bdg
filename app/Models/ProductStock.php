@@ -16,7 +16,7 @@ class ProductStock extends Model
     protected $fillable = [
         'id',
         'product_id',
-        'qty',
-        'flag'
+        'qty'
+        
     ];
 }

@@ -103,25 +103,17 @@ public function create(Request $request)
      */
 
      /**
-     * Show the form for editing the specified resource.
+     * Get the details of a specific member.
      */
-    public function detail(Request $request)
+    public function show(Request $request, $id)
     {
-        $Product = Product::findOrFail($request);
-        $Product->makeHidden(['updated_at', 'deleted_at']);
-             if ($Product) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Detail Product!',
-                'data'    => $Product->loadMissing('image'),
-            ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Post Tidak Ditemukan!',
-                'data' => (object)[],
-            ], 401);
-        }
+        
+        $Product = Product::findOrFail($request, $id);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $Product,
+        ], 200);
     }
 
     
@@ -161,19 +153,13 @@ public function create(Request $request)
         return response()->json([
             'success' => false,
             'message' => 'Product Tidak Ditemukan!',
-            'data' => (object)[],
+            'data' => (object)[$Product],
         ], 404);
     }
 
-    // Update the Product fields
-    $Product->name = $request->input('name');
-    $Product->category_id = $request->input('category_id');
-    $Product->description = $request->input('description');
-    $Product->price = $request->input('price');
-    $Product->discount = $request->input('discount');
-    $Product->rating = $request->input('rating');
-    $Product->brand = $request->input('brand');
-    $Product->member_id = $request->input('member_id');
+    $Product->fill($request->only([
+        'name', 'category_id', 'description', 'price', 'discount', 'rating', 'brand', 'member_id'
+    ]));
 
     // Save the changes
     $Product->save();
@@ -227,7 +213,7 @@ public function create(Request $request)
             ], 404);
         }
     
-        if ($Product->deleted_at) {
+        if ($Product->deleted == 1) {
             $Product->forceDelete();
     
             return response()->json([
@@ -236,6 +222,7 @@ public function create(Request $request)
                 'data' => (object)[],
             ], 200);
         } else {
+            $Product->deleted = 1;
             $Product->delete();
     
             return response()->json([

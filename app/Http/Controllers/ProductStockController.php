@@ -168,7 +168,7 @@ class ProductStockController extends Controller
                 'success' => true,
                 'message' => 'Product Berhasil Dihapus secara permanen!',
                 'data' => (object)[],
-            ], 200);
+            ], 2020);
         } else {
             $Product->deleted = 1;
             $Product->delete();

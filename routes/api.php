@@ -43,13 +43,14 @@ Route::middleware('auth.app-token')->group(function () {
   Route::delete('/hapus/{id}',[MemberController::class,'destroy']);
   Route::get('/users',[MemberController::class,'index']);
   Route::get('/detailnya/{id}',[MemberController::class,'show']);
+  
 });
 
 Route::post('/membuatproduk',[ProductController::class,'create']);
 Route::get('/listproduk',[ProductController::class,'index']);
-Route::get('/detailproduk/{id}',[ProductController::class,'detail']);
+Route::get('/detailproduk/{id}',[ProductController::class,'show']);
 Route::post('/updateproduk/{id}',[ProductController::class,'update']);
-Route::delete('/deleteproduk/{id}',[ProductController::class,'destroy']);
+Route::put('/deleteproduk/{id}',[ProductController::class,'destroy']);
 Route::post('/membuatstock',[ProductStockController::class,'add']);
 
 
