@@ -32,7 +32,7 @@ class ArticleController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua Article!',
-                'data' => $article->loadMissing('image'),
+                'data' => $article->loadMissing('images'),
             ], 200);
     
         } catch (Exception $e) {
@@ -51,7 +51,7 @@ class ArticleController extends Controller
             'description' => 'required',
             'member_id' => 'required',
             'categori_id' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
         $article = new Article;
@@ -63,28 +63,30 @@ class ArticleController extends Controller
         $article->total_comment = 0;
     
         $article->save();
-
+    
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imagePath = $image->store('public/images');
+            foreach ($request->file('image') as $image) {
+                $imagePath = $image->store('public/images');
     
-            // Create an ArticleImage model to associate the image with the article
-            $articleImage = new ArticleImage;
-            $articleImage->image = $imagePath;
+                // Create an ArticleImage model to associate the image with the article
+                $articleImage = new ArticleImage;
+                $articleImage->image = $imagePath;
     
-            // Associate the image with the article
-            $article->image()->save($articleImage);
-             $imageUrl = url(Storage::url($article->image->image));
-             $article->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
+                // Save the article image with the article relationship
+                $article->images()->save($articleImage);
+            }
         }
-        // $article->loadMissing('image');
+    
+        // Hide 'updated_at' and 'deleted_at' columns
         $article->makeHidden(['updated_at', 'deleted_at']);
+    
         return response()->json([
             'success' => true,
             'message' => 'Artikel Berhasil Disimpan!',
-            'data' => $article->loadMissing('image'),
+            'data' => $article->loadMissing('images'),
         ], 201);
     }
+    
     
     
     
@@ -104,12 +106,12 @@ class ArticleController extends Controller
     {
         $article = Article::findOrFail($id);
         $article->makeHidden(['updated_at', 'deleted_at']);
-        $article->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
+        $article->images->makeHidden(['created_at', 'updated_at', 'deleted_at']);
              if ($article) {
             return response()->json([
                 'success' => true,
                 'message' => 'Detail Article!',
-                'data'    => $article->loadMissing('image'),
+                'data'    => $article->loadMissing('images'),
             ], 200);
         } else {
             return response()->json([
@@ -125,73 +127,75 @@ class ArticleController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
-{
-    // Define validation rules
-    $validator = Validator::make($request->all(), [
-        'title' => 'required|max:255',
-        'description' => 'required',
-        'member_id' => 'required',
-        'categori_id' => 'required',
-        'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
-
-    // Check if validation fails
-    if ($validator->fails()) {
+    {
+        // Define validation rules
+        $validator = Validator::make($request->all(), [
+            'title' => 'sometimes|required|max:255',
+            'description' => 'sometimes|required',
+            'member_id' => 'sometimes|required',
+            'categori_id' => 'sometimes|required',
+            'image.*' => 'image|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+    
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors(),
+            ], 422);
+        }
+    
+        // Find article by ID
+        $article = Article::find($id);
+    
+        // Check if article exists
+        if (!$article) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Article Tidak Ditemukan!',
+                'data' => (object)[],
+            ], 404);
+        }
+    
+        $article->fill($request->only([
+            'title', 'description', 'member_id', 'categori_id'
+        ]));
+    
+        // Save the changes
+        $article->save();
+    
+        // Handle the image upload
+        if ($request->hasFile('image')) {
+            $images = $request->file('image');
+    
+            // Delete existing images (optional, if you want to replace all images)
+            $article->images()->delete();
+    
+            // Upload and save the new images
+            foreach ($images as $image) {
+                $imagePath = $image->store('public/images');
+    
+                // Create an ArticleImage model to associate the image with the article
+                $articleImage = new ArticleImage;
+                $articleImage->image = $imagePath;
+    
+                // Associate the image with the article
+                $article->images()->save($articleImage);
+            }
+        }
+    
+        // Load the missing image relationship if it exists
+        $article->loadMissing('images');
+    
+        // Make hidden any attributes you want to exclude from the JSON response
+        $article->makeHidden(['updated_at', 'deleted_at']);
+        $article->images->makeHidden(['created_at', 'updated_at', 'deleted_at']); // Use 'images' not 'image'
         return response()->json([
-            'success' => false,
-            'message' => $validator->errors(),
-        ], 422);
+            'success' => true,
+            'message' => 'Artikel Berhasil Diupdate!',
+            'data' => $article->loadMissing('images'),
+        ], 200);
     }
-
-    // Find article by ID
-    $article = Article::find($id);
-
-    // Check if article exists
-    if (!$article) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Article Tidak Ditemukan!',
-            'data' => (object)[],
-        ], 404);
-    }
-
-    // Update the article fields
-    $article->title = $request->input('title');
-    $article->description = $request->input('description');
-    $article->member_id = $request->input('member_id');
-    $article->categori_id = $request->input('categori_id');
-
-    // Save the changes
-    $article->save();
-
-    // Handle the image upload
-    if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $imagePath = $image->store('public/images');
-
-        // Create an ArticleImage model to associate the image with the article
-        $articleImage = new ArticleImage;
-        $articleImage->image = $imagePath;
-
-        // Associate the image with the article
-        $article->image()->save($articleImage);
-        $imageUrl = url(Storage::url($article->image->image));
-    }
-
-    // Load the missing image relationship if it exists
-    $article->loadMissing('image');
-
-    // Make hidden any attributes you want to exclude from the JSON response
-    $article->makeHidden(['updated_at', 'deleted_at']);
-    $article->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
-    return response()->json([
-        'success' => true,
-        'message' => 'Artikel Berhasil Diupdate!',
-        'data' => $article,
-        'image_url' => $imageUrl ?? null, // Add image_url only if an image was uploaded
-    ], 200);
-}
-
     /**
      * Remove the specified resource from storage.
      */

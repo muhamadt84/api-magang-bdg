@@ -14,10 +14,9 @@ class Article extends Model
 
     protected $fillable = [
         'title',
-        'descryption',
+        'description',
         'member_id',
-        'category_id',
-        'image',
+        'categori_id',
         'image', 
     ];
 
@@ -32,8 +31,8 @@ class Article extends Model
         return $this->belongsTo(TableCategory::class, 'categori_id');
     }
 
-    public function image()
+    public function images()
     {
-        return $this->hasOne(ArticleImage::class);
+        return $this->hasMany(ArticleImage::class);
     }
 }
