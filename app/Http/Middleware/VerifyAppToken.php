@@ -10,9 +10,9 @@ class VerifyAppToken
 {
     public function handle($request, Closure $next)
     {
-        $appToken = $request->header('app-token');
+        $appToken = $request->header('APP-TOKEN');
         
-        if ($appToken !== 'your_app_token_here') {
+        if ($appToken !== 'MAGANGTELKOM') {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid App Token.',

@@ -8,10 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class TableCategory extends Model
 {
-    use SoftDeletes;
-    use HasFactory;
+    protected $table = 'table_categories'; // Nama tabel di database
+
     protected $fillable = [
-        'name', 
+        'name', // Kolom yang bisa diisi
+    ];
+
+    protected $hidden = [
+        'created_at', 'updated_at', 'deleted_at', // Kolom yang tidak akan ditampilkan dalam hasil JSON
     ];
 
    
