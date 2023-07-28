@@ -15,10 +15,8 @@ class AppTokenMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $expectedToken = config('app.app-token'); // Mengambil App Token dari konfigurasi
-
-        $token = $request->header('Authorization');
-
+        $expectedToken = 'MAGANGTELKOM'; // Menentukan token yang diharapkan
+        $token = $request->header('APP-TOKEN');
         // Memeriksa kecocokan App Token
         if ($token !== $expectedToken) {
             return response()->json([
