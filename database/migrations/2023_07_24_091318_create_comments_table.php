@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('article_id');
             $table->text('comment');
+            
             $table->integer('member_id');
             $table->softDeletes();
             $table->enum('deleted', ['0','1']);
