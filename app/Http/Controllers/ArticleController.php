@@ -106,7 +106,7 @@ class ArticleController extends Controller
     {
         $article = Article::findOrFail($id);
         $article->makeHidden(['updated_at', 'deleted_at']);
-        $article->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
+        $article->images->makeHidden(['created_at', 'updated_at', 'deleted_at']);
              if ($article) {
             return response()->json([
                 'success' => true,
