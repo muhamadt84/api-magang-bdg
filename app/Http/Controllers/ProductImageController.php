@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ProductImageController;
+use App\Http\Requests\StoreProductImageRequest;
+use App\Http\Requests\UpdateProductImageRequest;
 
 class ProductImageController extends Controller
 {
@@ -21,7 +24,7 @@ class ProductImageController extends Controller
             // Dapatkan URL dari path gambar
             $imageLink = url(Storage::url($imagePath));
     
-            // Simpan informasi gambar ke tabel 'table_article_image'
+            // Simpan informasi gambar ke tabel 'product_images'
             $productimage = new ProductImage;
             $productimage->image_path = $imagePath;
             $productimage->image_link = $imageLink;
