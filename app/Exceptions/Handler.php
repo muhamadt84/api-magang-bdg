@@ -69,7 +69,7 @@ class Handler extends ExceptionHandler
             'message' => 'Internal Server Error',
             'data' => []
         ], 500);
-    });
+    }); 
 }
     /**
      * Register the exception handling callbacks for the application.
