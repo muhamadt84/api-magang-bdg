@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
@@ -59,7 +60,7 @@ public function create(Request $request)
             'rating' => 'required',
             'brand' => 'required',
             'member_id' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
         $Product = new Product;
@@ -76,22 +77,22 @@ public function create(Request $request)
 
         if ($request->hasFile('image')) {
             foreach ($request->file('image') as $image) {
-                $imagePath = $image->store('public/images');
+                $imagePath = $image->store('public/image');
     
                 // Create an ProductImage model to associate the image with the product
                 $ProductImage = new ProductImage;
                 $ProductImage->image = $imagePath;
     
-                // Save the product image with the product relationship
+                // Save the ProductImage with the product relationship
                 $Product->images()->save($ProductImage);
             }
-        }
-        // $Product->loadMissing('image');
+        } 
+        // Hide 'updated_at' and 'deleted_at' columns
         $Product->makeHidden(['updated_at', 'deleted_at']);
         return response()->json([
             'success' => true,
             'message' => 'Product Berhasil Disimpan!',
-            'data' => $Product->loadMissing('image'),
+            'data' => $Product->loadMissing('images'),
         ], 201);
     }
     /**
@@ -108,15 +109,15 @@ public function create(Request $request)
     public function show(Request $request, $id)
     {
         
-        $Product = Product::findOrFail($request, $id);
+        $Product = Product::findOrFail($request,$id);
 
         return response()->json([
             'success' => true,
-            'data'    => $Product,
+            'message' => 'Detail Produk!',
+            'data' =>$Product,
         ], 200);
-    }
 
-    
+    }
    
 
     /**
@@ -134,7 +135,7 @@ public function create(Request $request)
         'rating' => 'sometimes|required',
         'brand' => 'sometimes|required',
         'member_id' => 'sometimes|required',
-        'image' => 'image|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
+        'image.*' => 'image|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
     // Check if validation fails
@@ -193,8 +194,7 @@ public function create(Request $request)
     return response()->json([
         'success' => true,
         'message' => 'Product Berhasil Diupdate!',
-        'data' => $Product,
-        'image_url' => $imageUrl ?? null, // Add image_url only if an image was uploaded
+        'data' => $Product->loadMissing('images'),
     ], 200);
 }
 

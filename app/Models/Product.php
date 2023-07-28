@@ -25,12 +25,11 @@ class Product extends Model
         'brand',
         'member_id',
         'image',
-        'image'
 
     ];
 
 
-    public function image()
+    public function images()
     {
         return $this->hasMany(ProductImage::class);
     }
