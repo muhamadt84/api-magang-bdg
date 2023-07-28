@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use App\Models\ProductStock;
+use App\Models\Comment;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\ProductStockController;
 
-class ProductStockController extends Controller
+class CommentController extends Controller
 {
     public function index(Request $request)
     {
@@ -27,16 +26,16 @@ class ProductStockController extends Controller
                 ], 400);
             }
     
-            $Product = ProductStock::paginate($perPage);
-            $Product->makeHidden(['updated_at', 'deleted']);
+            $Comment = Comment::paginate($perPage);
+            $Comment->makeHidden(['updated_at', 'deleted']);
             return response()->json([
                 'success' => true,
-                'message' => 'List Semua Product!',
+                'message' => 'List Semua Comment!',
                 // 'current_page' => $posts->currentPage(),
                 // 'per_page' => $posts->perPage(),
                 // 'total_data' => $posts->total(),
                 // 'last_page' => $posts->lastPage(),
-                'data' => $Product->items(),
+                'data' => $Comment,
             ], 200);
     
         } catch (Exception $e) {
@@ -47,26 +46,27 @@ class ProductStockController extends Controller
         }
     }
 
-    public function add(Request $request)
+    public function create(Request $request)
     {
         $validated = $request->validate([
-            'product_id' => 'required',
-            'qty' => 'required',
+            'article_id' => 'required',
+            'comment' => 'required',
+            'member_id' => 'required'
         ]);
     
-        $Product = new ProductStock;
-        $Product->product_id = $validated['product_id'];
-        $Product->qty = $validated['qty'];
-        
+        $Comment = new Comment;
+        $Comment->article_id= $validated['article_id'];
+        $Comment->comment= $validated['comment'];
+        $Comment->member_id = $validated['member_id'];
     
-        $Product->save();
+        $Comment->save();
+    
         return response()->json([
             'success' => true,
-            'message' => 'Product Berhasil Disimpan!',
-            'data' => $Product,
+            'message' => 'Comment Berhasil Disimpan!',
+            'data' => $Comment,
         ], 201);
     }
-    
     
 
     /**
@@ -76,20 +76,15 @@ class ProductStockController extends Controller
     /**
      * Display the specified resource.
      */
-   
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function detail($id)
+    public function show($id)
     {
-        $Product = ProductStock::findOrFail($id);
-        $Product->makeHidden(['updated_at', 'deleted_at']);
-             if ($Product) {
+        $Comment= Comment::with('writer:id,username')->findOrFail($id);
+        $Comment->makeHidden(['updated_at', 'deleted_at']);
+             if ($Comment) {
             return response()->json([
                 'success' => true,
                 'message' => 'Detail Post!',
-                'data'    => $Product
+                'data'    => $Comment
             ], 200);
         } else {
             return response()->json([
@@ -100,6 +95,10 @@ class ProductStockController extends Controller
         }
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     */
+
 
     /**
      * Update the specified resource in storage.
@@ -108,8 +107,9 @@ class ProductStockController extends Controller
     {
         // Define validation rules
         $validator = Validator::make($request->all(), [
-            'qty' => 'required',
-            'product_id' => 'required',
+            'article_id' => 'required',
+            'comment' => 'required',
+            'member_id' => 'required'
         ]);
     
         // Check if validation fails
@@ -120,29 +120,32 @@ class ProductStockController extends Controller
             ], 422);
         }
     
-        // Find article by ID
-        $Product = ProductStock::find($id);
+        // Find Comment by ID
+        $Comment = Comment::find($id);
     
-        // Check if article exists
-        if (!$Product) {
+        // Check if Comment exists
+        if (!$Comment) {
             return response()->json([
                 'success' => false,
-                'message' => 'Product Tidak Ditemukan!',
+                'message' => 'Comment Tidak Ditemukan!',
                 'data' => (object)[],
             ], 404);
         }
     
-        // Update the article fields
-        $Product->product_id = $validated['product_id'];
-        $Product->qty = $validated['qty'];
+        // Update the Comment fields
+        $Comment->article_id= $validated['article_id'];
+        $Comment->comment= $validated['comment'];
+        $Comment->member_id = $validated['member_id'];
+        $Comment->total_comment = 0;
+
     
         // Save the changes
-        $Product->save();
+        $Comment->save();
     
         return response()->json([
             'success' => true,
-            'message' => 'Product Berhasil Diupdate!',
-            'data' => $Product,
+            'message' => 'Comment Berhasil Diupdate!',
+            'data' => $Comment,
         ], 200);
     }
 
@@ -151,31 +154,31 @@ class ProductStockController extends Controller
      */
     public function destroy($id)
     {
-        $Product = ProductStock::find($id);
+        $Comment = Comment::find($id);
     
-        if (!$Product) {
+        if (!$Comment) {
             return response()->json([
                 'success' => false,
-                'message' => 'Product not Found !',
+                'message' => 'Comment not Found !',
                 'data' => (object)[],
             ], 404);
         }
     
-        if ($Product->deleted == 1) {
-            $Product->forceDelete();
+        if ($Comment->deleted == 1) {
+            $Comment->forceDelete();
     
             return response()->json([
                 'success' => true,
-                'message' => 'Product Berhasil Dihapus secara permanen!',
+                'message' => 'Comment Berhasil Dihapus secara permanen!',
                 'data' => (object)[],
-            ], 2020);
+            ], 200);
         } else {
-            $Product->deleted = 1;
-            $Product->delete();
+            $Comment->deleted = 1;
+            $Comment->delete();
     
             return response()->json([
                 'success' => true,
-                'message' => 'Product Berhasil Dihapus!',
+                'message' => 'Comment Berhasil Dihapus!',
                 'data' => (object)[],
             ], 200);
         }

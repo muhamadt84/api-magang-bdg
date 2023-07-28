@@ -2,21 +2,28 @@
 
 namespace App\Models;
 
-use App\Models\ProductStock;
+use App\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ProductStock extends Model
+class Comment extends Model
 {
-    
-    use HasFactory, SoftDeletes;
+    use SoftDeletes ;
+    use HasFactory ;
 
-    protected $table = 'product_stocks';
+    /**
+     * fillable
+     *
+     * @var array
+     */
     protected $fillable = [
         'id',
-        'product_id',
-        'qty'
-        
+        'article_id',
+        'comment',
+        'member_id'
+      
+
+
     ];
 }
