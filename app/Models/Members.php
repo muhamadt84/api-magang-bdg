@@ -36,6 +36,11 @@ class Members extends Authenticatable
         'remember_token',
     ];
 
+    public function getImageNameAttribute($value)
+    {
+    
+            return public_path($value);
+    }
     /**
      * The attributes that should be cast.
      *

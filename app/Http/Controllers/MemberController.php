@@ -134,78 +134,80 @@ class MemberController extends Controller
     
      
 
-public function update(Request $request, string $id)
-{
-    // Validate the request data
-    $validator = Validator::make($request->all(), [
-        'member_id' => 'sometimes|required',
-        'first_name' => 'sometimes|required',
-        'last_name' => 'sometimes|required',
-        'dob' => 'sometimes|required',
-        'gender' => 'sometimes|required',
-        'address' => 'sometimes|required',
-        'image' => 'image|mimes:jpeg,png,jpg,gif|max:20480',
-        'bio' => 'sometimes|required',
-        'highschool' => 'sometimes|required',
-        'phone_number' => 'sometimes|required',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'errors' => $validator->errors(),
-        ], 422);
-    }
-
-    // Find the member detail by id
-    $memberDetail = MembersDetail::find($id);
-
-    if (!$memberDetail) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Member not found',
-        ], 404);
-    }
-
-    // Pastikan nama kolom yang digunakan sesuai dengan struktur tabel dan modelnya
-    $dataToUpdate = $request->only([
-        'member_id',
-        'first_name',
-        'last_name',
-        'dob',
-        'gender',
-        'address',
-        'bio',
-        'high_school', // Fix typo here: 'higschool' should be 'highschool'
-        'phone_number',
-    ]);
-
-    // Handle image upload
-    if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $imagePath = $image->store('images', 'public');
-        $dataToUpdate['image'] = $imagePath;
-    }
-
-    // Periksa apakah nilai atribut tidak kosong sebelum mengisinya ke dalam model
-    foreach ($dataToUpdate as $key => $value) {
-        if ($request->filled($key)) {
-            $memberDetail->$key = $value;
-        }
-    }
-
-    if ($request->has('password')) {
-        $memberDetail->password = bcrypt($request->input('password'));
-    }
-
-    $memberDetail->save();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Member updated successfully',
-        'member' => $memberDetail,
-    ]);
-}
+     public function update(Request $request, string $id)
+     {
+         // Validate the request data
+         $validator = Validator::make($request->all(), [
+             'member_id' => 'sometimes|required',
+             'first_name' => 'sometimes|required',
+             'last_name' => 'sometimes|required',
+             'dob' => 'sometimes|required',
+             'gender' => 'sometimes|required',
+             'address' => 'sometimes|required',
+             'image' => 'sometimes|required|image|mimes:jpeg,png,jpg,gif|max:20480',
+             'bio' => 'sometimes|required',
+             'high_school' => 'sometimes|required',
+             'phone_number' => 'sometimes|required',
+         ]);
+     
+         if ($validator->fails()) {
+             return response()->json([
+                 'success' => false,
+                 'errors' => $validator->errors(),
+             ], 422);
+         }
+     
+         // Find the member detail by id
+         $memberDetail = MembersDetail::find($id);
+     
+         if (!$memberDetail) {
+             return response()->json([
+                 'success' => false,
+                 'message' => 'Member not found',
+             ], 404);
+         }
+     
+         // Only update the fields that are present in the request
+         $dataToUpdate = $request->only([
+             'member_id',
+             'first_name',
+             'last_name',
+             'dob',
+             'gender',
+             'address',
+             'bio',
+             'high_school', 
+             'phone_number',
+         ]);
+     
+         // Handle image upload if an image is provided in the request
+         if ($request->hasFile('image')) {
+             // Delete the old image if it exists
+             if ($memberDetail->image && Storage::disk('public')->exists($memberDetail->image)) {
+                 Storage::disk('public')->delete($memberDetail->image);
+             }
+     
+             $image = $request->file('image');
+             $imagePath = $image->store('images', 'public');
+             $dataToUpdate['image'] = $imagePath;
+         }
+     
+         // Update the member details with the new data
+         $memberDetail->fill($dataToUpdate);
+     
+         if ($request->has('password')) {
+             $memberDetail->password = bcrypt($request->input('password'));
+         }
+     
+         $memberDetail->save();
+     
+         return response()->json([
+             'success' => true,
+             'message' => 'Member updated successfully',
+             'member' => $memberDetail,
+         ]);
+     }
+     
 
 
 

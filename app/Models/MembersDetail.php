@@ -47,7 +47,7 @@ class MembersDetail extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at' => 'timestamp',
         'password' => 'hashed',
     ];
 }
