@@ -11,9 +11,12 @@ class ProductStock extends Model
 {
     
     use HasFactory, SoftDeletes;
+
+    protected $table = 'product_stocks';
     protected $fillable = [
         'id',
         'product_id',
-        'qty' 
+        'qty'
+        
     ];
 }
