@@ -31,11 +31,7 @@ class ProductStockController extends Controller
             $Product->makeHidden(['updated_at', 'deleted']);
             return response()->json([
                 'success' => true,
-                'message' => 'List Semua Product!',
-                // 'current_page' => $posts->currentPage(),
-                // 'per_page' => $posts->perPage(),
-                // 'total_data' => $posts->total(),
-                // 'last_page' => $posts->lastPage(),
+                'message' => 'List Semua ProductStock!',
                 'data' => $Product->items(),
             ], 200);
     

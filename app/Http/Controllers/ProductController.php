@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductStock;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +17,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->query('limit', 10); // Menentukan jumlah item per halaman, defaultnya 10
+       $perPage = $request->query('limit', 10); // Menentukan jumlah ite m per halaman, defaultnya 10
         
         try {
             $validator = Validator::make($request->all(), [
@@ -36,9 +37,9 @@ class ProductController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua Product!',
-                'data' => $Product,
+                'data' => $Product->loadMissing('images'),
             ], 200);
-    
+
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -60,7 +61,7 @@ public function create(Request $request)
             'rating' => 'required',
             'brand' => 'required',
             'member_id' => 'required',
-            'images' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
         $Product = new Product;
@@ -77,7 +78,7 @@ public function create(Request $request)
 
         if ($request->hasFile('image')) {
             foreach ($request->file('image') as $image) {
-                $imagePath = $image->store('public/image');
+                $imagePath = $image->store('public/images');
     
                 // Create an ProductImage model to associate the image with the product
                 $ProductImage = new ProductImage;
@@ -89,6 +90,7 @@ public function create(Request $request)
         } 
         // Hide 'updated_at' and 'deleted_at' columns
         $Product->makeHidden(['updated_at', 'deleted_at']);
+        
         return response()->json([
             'success' => true,
             'message' => 'Product Berhasil Disimpan!',
@@ -106,18 +108,17 @@ public function create(Request $request)
      /**
      * Get the details of a specific member.
      */
-    public function show(Request $request, $id)
+    public function show(Request $request)
     {
-        
-        $Product = Product::findOrFail($request,$id);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Detail Produk!',
-            'data' =>$Product,
-        ], 200);
-
-    }
+        $perPage = $request->query('limit', 10);
+        $Product = Product::paginate($perPage);
+            $Product->makeHidden(['updated_at', 'deleted','deleted_at']);
+            return response()->json([
+                'success' => true,
+                'message' => 'List Semua Product!',
+                'data' => $Product->loadMissing('images'),
+            ], 200);
+        }
    
 
     /**
@@ -154,7 +155,7 @@ public function create(Request $request)
         return response()->json([
             'success' => false,
             'message' => 'Product Tidak Ditemukan!',
-            'data' => (object)[$Product],
+            'data' => (object)[],
         ], 404);
     }
 
@@ -174,13 +175,13 @@ public function create(Request $request)
 
         // Upload and save the new images
         foreach ($images as $image) {
-            $imagePath = $image->store('public/images');
+            $imagePath = $image->store('public/image');
 
-            // Create an ArticleImage model to associate the image with the article
+            // Create an ProductImage model to associate the image with the Product
             $ProductImage = new ProductImage;
             $ProductImage->image = $imagePath;
 
-            // Associate the image with the article
+            // Associate the image with the Product
             $Product->images()->save($ProductImage);
         }
     }
@@ -219,7 +220,7 @@ public function create(Request $request)
             return response()->json([
                 'success' => true,
                 'message' => 'Product Berhasil Dihapus secara permanen!',
-                'data' => (object)[],
+                'data' =>  $Product,
             ], 200);
         } else {
             $Product->deleted = 1;
@@ -228,7 +229,7 @@ public function create(Request $request)
             return response()->json([
                 'success' => true,
                 'message' => 'Product Berhasil Dihapus!',
-                'data' => (object)[],
+                'data' => $Product,
             ], 200);
         }
     }

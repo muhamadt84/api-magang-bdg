@@ -25,11 +25,11 @@ class ProductImageController extends Controller
             $imageLink = url(Storage::url($imagePath));
     
             // Simpan informasi gambar ke tabel 'product_images'
-            $productimage = new ProductImage;
-            $productimage->image_path = $imagePath;
-            $productimage->image_link = $imageLink;
-            $productimage->save();
+            $ProductImage = new ProductImage;
+            $ProductImage->image_path = $imagePath;
+            $ProductImage->image_link = $imageLink;
+            $ProductImage->save();
     
-            return $productimage->image_path;
+            return $ProductImage->image_path;
         }
 }

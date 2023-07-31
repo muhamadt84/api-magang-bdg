@@ -24,7 +24,7 @@ class Product extends Model
         'rating',
         'brand',
         'member_id',
-        'image',
+        'images',
 
     ];
 
