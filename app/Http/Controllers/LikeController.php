@@ -30,6 +30,49 @@ class LikeController extends Controller
         ], 201);
     }
 
+    public function update(Request $request, $id)
+    {
+        // Define validation rules
+        $validator = Validator::make($request->all(), [
+            'article_id' => 'required',
+            'member_id' => 'required'
+        ]);
+    
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors(),
+            ], 422);
+        }
+    
+        // Find Comment by ID
+        $Like = Like::find($id);
+    
+        // Check if Comment exists
+        if (!$Comment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Comment Tidak Ditemukan!',
+                'data' => (object)[],
+            ], 404);
+        }
+    
+        // Update the Comment fields
+        $Comment->article_id= $validated['article_id'];
+        $Comment->member_id = $validated['member_id'];
+        $Comment->total_like = 0;
+
+    
+        // Save the changes
+        $Comment->save();
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment Berhasil Diupdate!',
+            'data' => $Comment,
+        ], 200);
+    }
     public function destroy($id)
     {
         $Like = Like::find($id);

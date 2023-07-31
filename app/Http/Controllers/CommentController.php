@@ -179,7 +179,7 @@ class CommentController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Comment Berhasil Dihapus!',
-                'data' => (object)[],
+                'data' => $Comment,
             ], 200);
         }
     }
