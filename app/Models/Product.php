@@ -3,21 +3,19 @@
 namespace App\Models;
 
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
-
-    /**
-     * fillable
-     *
-     * @var array
-     */
+    use SoftDeletes ;
+    use HasFactory ;
+    
+    protected $table = 'products';
     protected $fillable = [
+    
         'name',
         'category_id',
         'description',
@@ -26,10 +24,15 @@ class Product extends Model
         'rating',
         'brand',
         'member_id',
-        'created_at',
-        'updated_at',
-
+        'image',
+        'image'
 
     ];
 
+
+    public function image()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+    
 }

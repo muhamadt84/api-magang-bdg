@@ -7,7 +7,9 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\ProductStockController;
 use App\Http\Controllers\TableCategoryController;
 
 /*
@@ -43,7 +45,9 @@ Route::middleware('auth.app-token')->group(function () {
   Route::delete('/hapus/{id}',[MemberController::class,'destroy']);
   Route::get('/users',[MemberController::class,'index']);
   Route::get('/detailnya/{id}',[MemberController::class,'show']);
+  
 });
+
 
 
 Route::get('/listcomment',[CommentController::class,'index']);
@@ -52,6 +56,13 @@ Route::post('/post',[CommentController::class,'post']);
 Route::get('/menampilkan',[CommentController::class,'index']);
 Route::get('/specific/{id}',[CommentController::class,'detail']);
 Route::put('/deletecomment/{id}',[CommentController::class,'destroy']);
+
+Route::post('/membuatproduk',[ProductController::class,'create']);
+Route::get('/listproduk',[ProductController::class,'index']);
+Route::get('/detailproduk/{id}',[ProductController::class,'show']);
+Route::post('/updateproduk/{id}',[ProductController::class,'update']);
+Route::put('/deleteproduk/{id}',[ProductController::class,'destroy']);
+Route::post('/membuatstock',[ProductStockController::class,'add']);
 
 Route::post('/nambahlike',[LikeController::class,'create']);
 Route::delete('/deletelike/{id}',[LikeController::class,'destroy']);
