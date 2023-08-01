@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -137,11 +138,13 @@ class CommentController extends Controller
         $Comment->comment= $validated['comment'];
         $Comment->member_id = $validated['member_id'];
         $Comment->total_comment = 0;
-
+        // Create a new article record in the 'article' table.
+        $article = new Article(); // Assuming 'article' is the correct model name
+        $article->total_comment= $total_comment;
+        $article->save();
     
         // Save the changes
         $Comment->save();
-    
         return response()->json([
             'success' => true,
             'message' => 'Comment Berhasil Diupdate!',
