@@ -37,7 +37,8 @@ class ProductController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua Product!',
-                'data' => $Product->loadMissing('images'),
+                'data' => $Product->loadMissing(['ProductStock', 'images']),
+                'other_table_data' => $ProductStock->loadMissing(['ProductStock']),
             ], 200);
 
         } catch (Exception $e) {
@@ -79,21 +80,22 @@ public function create(Request $request)
         if ($request->hasFile('image')) {
             foreach ($request->file('image') as $image) {
                 $imagePath = $image->store('public/images');
-    
-                // Create an ProductImage model to associate the image with the product
+
+                // Create an ProductImage model to associate the image with the Product
                 $ProductImage = new ProductImage;
                 $ProductImage->image = $imagePath;
-    
-                // Save the ProductImage with the product relationship
+
+                // Save the ProductImage with the Product relationship
                 $Product->images()->save($ProductImage);
             }
-        } 
+        }
+
         // Hide 'updated_at' and 'deleted_at' columns
         $Product->makeHidden(['updated_at', 'deleted_at']);
-        
+
         return response()->json([
             'success' => true,
-            'message' => 'Product Berhasil Disimpan!',
+            'message' => 'Artikel Berhasil Disimpan!',
             'data' => $Product->loadMissing('images'),
         ], 201);
     }
@@ -110,13 +112,12 @@ public function create(Request $request)
      */
     public function show(Request $request)
     {
-        $perPage = $request->query('limit', 10);
+        $perPage = $request->query('limit', 5);
         $Product = Product::paginate($perPage);
-            $Product->makeHidden(['updated_at', 'deleted','deleted_at']);
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua Product!',
-                'data' => $Product->loadMissing('images'),
+                'data' => $Product->loadMissing(['ProductStock', 'images']),
             ], 200);
         }
    
@@ -175,7 +176,7 @@ public function create(Request $request)
 
         // Upload and save the new images
         foreach ($images as $image) {
-            $imagePath = $image->store('public/image');
+            $imagePath = $image->store('public/images');
 
             // Create an ProductImage model to associate the image with the Product
             $ProductImage = new ProductImage;
@@ -187,11 +188,9 @@ public function create(Request $request)
     }
 
     // Load the missing image relationship if it exists
-    $Product->loadMissing('image');
+    $Product->loadMissing('images');
 
     // Make hidden any attributes you want to exclude from the JSON response
-    $Product->makeHidden(['updated_at', 'deleted_at']);
-    $Product->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
     return response()->json([
         'success' => true,
         'message' => 'Product Berhasil Diupdate!',

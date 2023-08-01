@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Product;
 use App\Models\ProductStock;
 use Illuminate\Http\Request;
@@ -27,12 +28,11 @@ class ProductStockController extends Controller
                 ], 400);
             }
     
-            $Product = ProductStock::paginate($perPage);
-            $Product->makeHidden(['updated_at', 'deleted']);
+            $ProductStock = ProductStock::paginate($perPage);
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua ProductStock!',
-                'data' => $Product->items(),
+                'data' => $ProductStock,
             ], 200);
     
         } catch (Exception $e) {
@@ -50,16 +50,16 @@ class ProductStockController extends Controller
             'qty' => 'required',
         ]);
     
-        $Product = new ProductStock;
-        $Product->product_id = $validated['product_id'];
-        $Product->qty = $validated['qty'];
+        $ProductStock = new ProductStock;
+        $ProductStock->product_id = $validated['product_id'];
+        $ProductStock->qty = $validated['qty'];
         
     
-        $Product->save();
+        $ProductStock->save();
         return response()->json([
             'success' => true,
             'message' => 'Product Berhasil Disimpan!',
-            'data' => $Product,
+            'data' => $ProductStock,
         ], 201);
     }
     

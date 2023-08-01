@@ -52,7 +52,8 @@ Route::middleware('auth.app-token')->group(function () {
   Route::post('/updateproduk/{id}',[ProductController::class,'update']);
   Route::put('/deleteproduk/{id}',[ProductController::class,'destroy']);
   Route::post('/membuatstock',[ProductStockController::class,'add']);
-  
+  Route::get('/listprodukstock',[ProductStockController::class,'index']);
+
 });
 
 
