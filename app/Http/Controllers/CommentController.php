@@ -129,7 +129,7 @@ class CommentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Comment Tidak Ditemukan!',
-                'data' => (object)[],
+                'data' => (object)[],    
             ], 404);
         }
     
@@ -137,7 +137,7 @@ class CommentController extends Controller
         $Comment->article_id= $validated['article_id'];
         $Comment->comment= $validated['comment'];
         $Comment->member_id = $validated['member_id'];
-        $Comment->total_comment = 0;
+        $Comment->total_comment = 2;
         // Create a new article record in the 'article' table.
         $article = new Article(); // Assuming 'article' is the correct model name
         $article->total_comment= $total_comment;
