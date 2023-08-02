@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Product;
 use App\Models\ProductStock;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\ProductStockController;
 
@@ -58,7 +59,7 @@ class ProductStockController extends Controller
         $ProductStock->save();
         return response()->json([
             'success' => true,
-            'message' => 'Product Berhasil Disimpan!',
+            'message' => 'ProductStock Berhasil Disimpan!',
             'data' => $ProductStock,
         ], 201);
     }
@@ -77,20 +78,21 @@ class ProductStockController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function detail($id)
+    public function show(Request $request)
     {
-        $Product = ProductStock::findOrFail($id);
-        $Product->makeHidden(['updated_at', 'deleted_at']);
-             if ($Product) {
+        $ProductStock = ProductStock::with('writer:id,username')->findOrFail($request);
+        $ProductStock->makeHidden(['updated_at', 'deleted_at']);
+             if ($ProductStock) {
             return response()->json([
                 'success' => true,
-                'message' => 'Detail Post!',
-                'data'    => $Product
+                'message' => 'List ProductStock!',
+                'data'    => $ProductStock,
             ], 200);
+            
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Post Tidak Ditemukan!',
+                'message' => 'ProductStock Tidak Ditemukan!',
                 'data' => (object)[],
             ], 401);
         }

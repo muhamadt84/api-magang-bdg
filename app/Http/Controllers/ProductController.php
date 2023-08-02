@@ -38,7 +38,6 @@ class ProductController extends Controller
                 'success' => true,
                 'message' => 'List Semua Product!',
                 'data' => $Product->loadMissing(['ProductStock', 'images']),
-                'other_table_data' => $ProductStock->loadMissing(['ProductStock']),
             ], 200);
 
         } catch (Exception $e) {
@@ -95,7 +94,7 @@ public function create(Request $request)
 
         return response()->json([
             'success' => true,
-            'message' => 'Artikel Berhasil Disimpan!',
+            'message' => 'Product Berhasil Disimpan!',
             'data' => $Product->loadMissing('images'),
         ], 201);
     }
@@ -116,7 +115,7 @@ public function create(Request $request)
         $Product = Product::paginate($perPage);
             return response()->json([
                 'success' => true,
-                'message' => 'List Semua Product!',
+                'message' => 'Detail Semua Product!',
                 'data' => $Product->loadMissing(['ProductStock', 'images']),
             ], 200);
         }
@@ -228,7 +227,7 @@ public function create(Request $request)
             return response()->json([
                 'success' => true,
                 'message' => 'Product Berhasil Dihapus!',
-                'data' => $Product,
+                'data' => $Product->loadMissing(['ProductStock', 'images']),
             ], 200);
         }
     }
