@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Product;
 use App\Models\ProductStock;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\ProductStockController;
 
@@ -27,16 +29,11 @@ class ProductStockController extends Controller
                 ], 400);
             }
     
-            $Product = ProductStock::paginate($perPage);
-            $Product->makeHidden(['updated_at', 'deleted']);
+            $ProductStock = ProductStock::paginate($perPage);
             return response()->json([
                 'success' => true,
-                'message' => 'List Semua Product!',
-                // 'current_page' => $posts->currentPage(),
-                // 'per_page' => $posts->perPage(),
-                // 'total_data' => $posts->total(),
-                // 'last_page' => $posts->lastPage(),
-                'data' => $Product->items(),
+                'message' => 'List Semua ProductStock!',
+                'data' => $ProductStock,
             ], 200);
     
         } catch (Exception $e) {
@@ -54,16 +51,16 @@ class ProductStockController extends Controller
             'qty' => 'required',
         ]);
     
-        $Product = new ProductStock;
-        $Product->product_id = $validated['product_id'];
-        $Product->qty = $validated['qty'];
+        $ProductStock = new ProductStock;
+        $ProductStock->product_id = $validated['product_id'];
+        $ProductStock->qty = $validated['qty'];
         
     
-        $Product->save();
+        $ProductStock->save();
         return response()->json([
             'success' => true,
-            'message' => 'Product Berhasil Disimpan!',
-            'data' => $Product,
+            'message' => 'ProductStock Berhasil Disimpan!',
+            'data' => $ProductStock,
         ], 201);
     }
     
@@ -81,20 +78,21 @@ class ProductStockController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function detail($id)
+    public function show(Request $request)
     {
-        $Product = ProductStock::findOrFail($id);
-        $Product->makeHidden(['updated_at', 'deleted_at']);
-             if ($Product) {
+        $ProductStock = ProductStock::with('writer:id,username')->findOrFail($request);
+        $ProductStock->makeHidden(['updated_at', 'deleted_at']);
+             if ($ProductStock) {
             return response()->json([
                 'success' => true,
-                'message' => 'Detail Post!',
-                'data'    => $Product
+                'message' => 'List ProductStock!',
+                'data'    => $ProductStock,
             ], 200);
+            
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Post Tidak Ditemukan!',
+                'message' => 'ProductStock Tidak Ditemukan!',
                 'data' => (object)[],
             ], 401);
         }

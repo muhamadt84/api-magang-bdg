@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductStock;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,13 +25,15 @@ class Product extends Model
         'rating',
         'brand',
         'member_id',
-        'image',
-        'image'
+        'images',
 
     ];
 
-
-    public function image()
+    public function ProductStock()
+    {
+        return $this->belongsTo(ProductStock::class);
+    }
+    public function images()
     {
         return $this->hasMany(ProductImage::class);
     }

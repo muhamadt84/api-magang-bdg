@@ -17,7 +17,6 @@ return new class extends Migration
             $table->text('qty');
             $table->timestamps();
             $table->enum('deleted', ['0', '1']);
-            $table->softDeletes();
 
         });
     }
