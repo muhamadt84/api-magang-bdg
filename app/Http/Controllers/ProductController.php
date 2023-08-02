@@ -62,6 +62,7 @@ public function create(Request $request)
             'brand' => 'required',
             'member_id' => 'required',
             'image.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
         $Product = new Product;
@@ -95,6 +96,7 @@ public function create(Request $request)
         return response()->json([
             'success' => true,
             'message' => 'Product Berhasil Disimpan!',
+            'data' => $Product->loadMissing('images'),
             'data' => $Product->loadMissing('images'),
         ], 201);
     }
@@ -156,6 +158,7 @@ public function create(Request $request)
             'success' => false,
             'message' => 'Product Tidak Ditemukan!',
             'data' => (object)[],
+            'data' => (object)[],
         ], 404);
     }
 
@@ -178,9 +181,11 @@ public function create(Request $request)
             $imagePath = $image->store('public/images');
 
             // Create an ProductImage model to associate the image with the Product
+            // Create an ProductImage model to associate the image with the Product
             $ProductImage = new ProductImage;
             $ProductImage->image = $imagePath;
 
+            // Associate the image with the Product
             // Associate the image with the Product
             $Product->images()->save($ProductImage);
         }
@@ -188,11 +193,13 @@ public function create(Request $request)
 
     // Load the missing image relationship if it exists
     $Product->loadMissing('images');
+    $Product->loadMissing('images');
 
     // Make hidden any attributes you want to exclude from the JSON response
     return response()->json([
         'success' => true,
         'message' => 'Product Berhasil Diupdate!',
+        'data' => $Product->loadMissing('images'),
         'data' => $Product->loadMissing('images'),
     ], 200);
 }
@@ -218,6 +225,7 @@ public function create(Request $request)
             return response()->json([
                 'success' => true,
                 'message' => 'Product Berhasil Dihapus secara permanen!',
+                'data' =>  $Product,
                 'data' =>  $Product,
             ], 200);
         } else {

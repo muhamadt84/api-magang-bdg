@@ -126,76 +126,78 @@ class ArticleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
-    {
-        // Define validation rules
-        $validator = Validator::make($request->all(), [
-            'title' => 'sometimes|required|max:255',
-            'description' => 'sometimes|required',
-            'member_id' => 'sometimes|required',
-            'categori_id' => 'sometimes|required',
-            'image.*' => 'image|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-    
-        // Check if validation fails
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors(),
-            ], 422);
-        }
-    
-        // Find article by ID
-        $article = Article::find($id);
-    
-        // Check if article exists
-        if (!$article) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Article Tidak Ditemukan!',
-                'data' => (object)[],
-            ], 404);
-        }
-    
-        $article->fill($request->only([
-            'title', 'description', 'member_id', 'categori_id'
-        ]));
-    
-        // Save the changes
-        $article->save();
-    
-        // Handle the image upload
-        if ($request->hasFile('image')) {
-            $images = $request->file('image');
-    
-            // Delete existing images (optional, if you want to replace all images)
-            $article->images()->delete();
-    
-            // Upload and save the new images
-            foreach ($images as $image) {
-                $imagePath = $image->store('public/images');
-    
-                // Create an ArticleImage model to associate the image with the article
-                $articleImage = new ArticleImage;
-                $articleImage->image = $imagePath;
-    
-                // Associate the image with the article
-                $article->images()->save($articleImage);
-            }
-        }
-    
-        // Load the missing image relationship if it exists
-        $article->loadMissing('images');
-    
-        // Make hidden any attributes you want to exclude from the JSON response
-        $article->makeHidden(['updated_at', 'deleted_at']);
-        $article->images->makeHidden(['created_at', 'updated_at', 'deleted_at']); // Use 'images' not 'image'
+    public function update(Request $request, string $id)
+{
+    // Validate the request data
+    $validator = Validator::make($request->all(), [
+        'member_id' => 'sometimes|required',
+        'first_name' => 'sometimes|required',
+        'last_name' => 'sometimes|required',
+        'dob' => 'sometimes|required',
+        'gender' => 'sometimes|required',
+        'address' => 'sometimes|required',
+        'image' => 'image|mimes:jpeg,png,jpg,gif|max:20480',
+        'bio' => 'sometimes|required',
+        'highschool' => 'sometimes|required',
+        'phone_number' => 'sometimes|required',
+    ]);
+
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Artikel Berhasil Diupdate!',
-            'data' => $article->loadMissing('images'),
-        ], 200);
+            'success' => false,
+            'errors' => $validator->errors(),
+        ], 422);
     }
+
+    // Find the member detail by id
+    $memberDetail = MembersDetail::find($id);
+
+    if (!$memberDetail) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Member not found',
+        ], 404);
+    }
+
+    // Pastikan nama kolom yang digunakan sesuai dengan struktur tabel dan modelnya
+    $dataToUpdate = $request->only([
+        'member_id',
+        'first_name',
+        'last_name',
+        'dob',
+        'gender',
+        'address',
+        'bio',
+        'high_school', // Fix typo here: 'higschool' should be 'highschool'
+        'phone_number',
+    ]);
+
+    // Handle image upload
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imagePath = $image->store('images', 'public');
+        $dataToUpdate['image'] = $imagePath;
+    }
+
+    // Periksa apakah nilai atribut tidak kosong sebelum mengisinya ke dalam model
+    foreach ($dataToUpdate as $key => $value) {
+        if ($request->filled($key)) {
+            $memberDetail->$key = $value;
+        }
+    }
+
+    if ($request->has('password')) {
+        $memberDetail->password = bcrypt($request->input('password'));
+    }
+
+    $memberDetail->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Member updated successfully',
+        'member' => $memberDetail,
+    ]);
+}
     /**
      * Remove the specified resource from storage.
      */

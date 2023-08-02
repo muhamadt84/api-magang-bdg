@@ -9,6 +9,7 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\MembersDetailController;
 use App\Http\Controllers\ProductStockController;
 use App\Http\Controllers\TableCategoryController;
 
@@ -65,7 +66,6 @@ Route::get('/menampilkan',[CommentController::class,'index']);
 Route::get('/specific/{id}',[CommentController::class,'detail']);
 Route::put('/deletecomment/{id}',[CommentController::class,'destroy']);
 
-Route::post('/nambahlike',[LikeController::class,'create']);
-Route::delete('/deletelike/{id}',[LikeController::class,'destroy']);
+
 
 Route::post('/generate-app-token', [AuthController::class, 'generateAppToken']);

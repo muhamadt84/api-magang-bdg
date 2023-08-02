@@ -7,7 +7,10 @@ use App\Models\Members;
 use Illuminate\Http\Request;
 use App\Models\MembersDetail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+
 
 class MemberController extends Controller
 {
@@ -27,17 +30,15 @@ class MemberController extends Controller
          ]);
      }
 
+    
+
+
      public function register(Request $request)
      {
-         $table_member = new Members;
-         
-         
-     
-       
          $validator = Validator::make($request->all(), [
              'fullname' => 'required',
              'username' => 'required',
-             'email' => 'required|email|unique:table_member',
+             'email' => 'required|email',
              'password' => 'required|min:6',
          ]);
      
@@ -48,24 +49,37 @@ class MemberController extends Controller
              ], 422);
          }
      
-        
-
+         // Split the fullname into first_name and last_name.
+         $name_parts = explode(' ', $request->input('fullname'));
+         $first_name = $name_parts[0];
+         $last_name = isset($name_parts[1]) ? $name_parts[1] : '';
+     
+         // Create a new member record in the 'Members' table.
          $table_member = new Members();
          $table_member->fullname = $request->input('fullname');
          $table_member->username = $request->input('username');
          $table_member->email = $request->input('email');
-         $table_member->password = bcrypt($request->input('password'));
+         $table_member->password = Hash::make($request->input('password')); // Use Hash::make() to bcrypt the password.
          $table_member->save();
      
-         $token = $table_member->createToken('app-token')->plainTextToken;
+         // Create a new member detail record in the 'MembersDetail' table.
+         $memberDetail = new MembersDetail(); // Assuming 'MembersDetail' is the correct model name
+         $memberDetail->first_name = $first_name;
+         $memberDetail->last_name = $last_name;
+         $memberDetail->save();
+     
+         // Generate token using the newly created member record ($table_member).
+         $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
      
          return response()->json([
              'success' => true,
              'message' => 'Registration successful',
              'data' => $table_member,
+             'other_table_data' => $memberDetail,
              'token' => $token,
          ], 201);
      }
+
      
 
     /**
@@ -115,48 +129,88 @@ class MemberController extends Controller
     /**
      * Update the details of a specific member.
      */
-    public function update(Request $request, string $id)
-    {
-        
-        $validator = Validator::make($request->all(), [
-            'member_id' => 'required|sometimes',
-            'firstname' => 'required|sometimes',
-            'lastname' => 'required|sometimes',
-            'dob' => 'required|sometimes' ,
-            'gender' => 'required|sometimes',
-            'address' => 'required|sometimes',
-            'image' => 'required|sometimes',
-            'bio' => 'required|sometimes',
-            'highschool' => 'required|sometimes',
-            'phone_number' => 'required|sometimes',
-        ]);
+   
+     
+    
+     
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors(),
-            ], 422);
-        }
+     public function update(Request $request, string $id)
+{
+    // Validate the request data
+    $validator = Validator::make($request->all(), [
+        'member_id' => 'sometimes|required',
+        'first_name' => 'sometimes|required',
+        'last_name' => 'sometimes|required',
+        'dob' => 'sometimes|required',
+        'gender' => 'sometimes|required',
+        'address' => 'sometimes|required',
+        'image' => 'image|mimes:jpeg,png,jpg,gif|max:20480',
+        'bio' => 'sometimes|required',
+        'highschool' => 'sometimes|required',
+        'phone_number' => 'sometimes|required',
+    ]);
 
-        $table_member_detail = MembersDetail::findOrFail($id);
-        $table_member_detail->fullname = $validate->input('fullname');
-        $table_member_detail->username = $validate->input('username');
-        $table_member_detail->email = $validate->input('email');
-
-        if ($request->has('password')) {
-            $table_member_detail->password = bcrypt($request->input('password'));
-        }
-
-        $table_member_detail->save();
-        
-        
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Member updated successfully',
-            'member' => $table_member_detail,
-        ]);
+            'success' => false,
+            'errors' => $validator->errors(),
+        ], 422);
     }
 
+    // Find the member detail by id
+    $memberDetail = MembersDetail::find($id);
+
+    if (!$memberDetail) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Member not found',
+        ], 404);
+    }
+
+    // Pastikan nama kolom yang digunakan sesuai dengan struktur tabel dan modelnya
+    $dataToUpdate = $request->only([
+        'member_id',
+        'first_name',
+        'last_name',
+        'dob',
+        'gender',
+        'address',
+        'bio',
+        'high_school', // Fix typo here: 'higschool' should be 'highschool'
+        'phone_number',
+    ]);
+
+    // Handle image upload
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imagePath = $image->store('images', 'public');
+        $dataToUpdate['image'] = $imagePath;
+    }
+
+    // Periksa apakah nilai atribut tidak kosong sebelum mengisinya ke dalam model
+    foreach ($dataToUpdate as $key => $value) {
+        if ($request->filled($key)) {
+            $memberDetail->$key = $value;
+        }
+    }
+
+    if ($request->has('password')) {
+        $memberDetail->password = bcrypt($request->input('password'));
+    }
+
+    $memberDetail->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Member updated successfully',
+        'member' => $memberDetail,
+    ]);
+}
+     
+
+
+
+    
     /**
      * Remove a specific member.
      */
@@ -172,3 +226,4 @@ class MemberController extends Controller
         ]);
     }
 }
+

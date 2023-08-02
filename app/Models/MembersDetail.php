@@ -18,12 +18,17 @@ class MembersDetail extends Authenticatable
      * @var array<int, string>
      */
 
-    protected $table = 'table_member_detail';
+    
+     protected $table = 'table_member_detail';
+
+    
 
     protected $fillable = [
         'name',
         'email',
         'password',
+        'image',
+        'member_id'
     ];
 
     /**
@@ -42,7 +47,7 @@ class MembersDetail extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at' => 'timestamp',
         'password' => 'hashed',
     ];
 }
