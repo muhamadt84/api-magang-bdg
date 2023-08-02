@@ -41,6 +41,15 @@ class MembersDetail extends Authenticatable
         'remember_token',
     ];
 
+    // MembersDetail.php
+
+/// MembersDetail.php
+
+public function member()
+{
+    return $this->belongsTo(Members::class, 'member_id', 'id');
+}
+
     /**
      * The attributes that should be cast.
      *

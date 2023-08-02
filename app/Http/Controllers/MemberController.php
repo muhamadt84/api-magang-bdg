@@ -18,18 +18,19 @@ class MemberController extends Controller
      * Register a new user.
      */
     
-     public function index()
+     public function index(Request $request)
      {
-        
-         $table_member = Members::all();
- 
+         $perPage = $request->input('per_page', 10); // Number of items per page, default is 10
+         $members = Members::paginate($perPage);
+         $memberDetails = MembersDetail::paginate($perPage);
+     
          return response()->json([
              'success' => true,
-             'data'    => $table_member,
-             'users' => $table_member,
+             'members' => $members,
+             'member_details' => $memberDetails,
          ]);
      }
-
+     
     
 
 
@@ -70,6 +71,7 @@ class MemberController extends Controller
      
          // Generate token using the newly created member record ($table_member).
          $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
+         $table_member->detail()->save($memberDetail);
      
          return response()->json([
              'success' => true,
@@ -117,14 +119,29 @@ class MemberController extends Controller
      */
     public function show(string $id)
     {
-        
-        $table_member = Members::findOrFail($id);
-
+        $member = Members::with('detail')->find($id);
+    
+        if (!$member) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Member not found',
+            ], 404);
+        }
+    
+        $memberDetail = $member->detail;
+    
         return response()->json([
             'success' => true,
-            'data'    => $table_member,
+            'member' => $member,
+            'member_detail' => $memberDetail,
         ], 200);
     }
+    
+
+    
+    
+
+
 
     /**
      * Update the details of a specific member.

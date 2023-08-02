@@ -50,7 +50,7 @@ Route::get('/detailnya/{id}',[MemberController::class,'show']);
 Route::post('/ubah/{id}',[MemberController::class,'update']);
 });
 
-
+Auth::routes(['verify' => true]);
 
 Route::get('/listcomment',[CommentController::class,'index']);
 Route::post('/add',[CommentController::class,'create']);

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class Members extends Authenticatable
+class Members extends Authenticatable 
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -41,6 +41,17 @@ class Members extends Authenticatable
     
             return public_path($value);
     }
+
+  
+
+// Members.php
+
+public function detail()
+{
+    return $this->hasOne(MembersDetail::class, 'member_id', 'id');
+}
+
+
     /**
      * The attributes that should be cast.
      *
