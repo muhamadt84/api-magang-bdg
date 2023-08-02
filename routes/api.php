@@ -9,6 +9,7 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\MembersDetailController;
 use App\Http\Controllers\ProductStockController;
 use App\Http\Controllers\TableCategoryController;
 
@@ -39,16 +40,17 @@ Route::middleware('auth.app-token')->group(function () {
   Route::post('/renew/{id}',[ArticleController::class,'update']);
   Route::delete('/delete/{id}',[ArticleController::class,'destroy']);
 
-  Route::post('/register',[MemberController::class,'register']);
-  Route::post('/login',[MemberController::class,'login']);
-  Route::post('/ubah/{id}',[MemberController::class,'update']);
-  Route::delete('/hapus/{id}',[MemberController::class,'destroy']);
-  Route::get('/users',[MemberController::class,'index']);
-  Route::get('/detailnya/{id}',[MemberController::class,'show']);
-  
+Route::post('/register',[MemberController::class,'register']);
+Route::post('/login',[MemberController::class,'login']);
+Route::delete('/hapus/{id}',[MemberController::class,'destroy']);
+Route::get('/users',[MemberController::class,'index']);
+Route::get('/detailnya/{id}',[MemberController::class,'show']);
+
+
+Route::post('/ubah/{id}',[MemberController::class,'update']);
 });
 
-
+Auth::routes(['verify' => true]);
 
 Route::get('/listcomment',[CommentController::class,'index']);
 Route::post('/add',[CommentController::class,'create']);

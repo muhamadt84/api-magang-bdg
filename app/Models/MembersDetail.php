@@ -18,12 +18,17 @@ class MembersDetail extends Authenticatable
      * @var array<int, string>
      */
 
-    protected $table = 'table_member_detail';
+    
+     protected $table = 'table_member_detail';
+
+    
 
     protected $fillable = [
         'name',
         'email',
         'password',
+        'image',
+        'member_id'
     ];
 
     /**
@@ -36,13 +41,22 @@ class MembersDetail extends Authenticatable
         'remember_token',
     ];
 
+    // MembersDetail.php
+
+/// MembersDetail.php
+
+public function member()
+{
+    return $this->belongsTo(Members::class, 'member_id', 'id');
+}
+
     /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at' => 'timestamp',
         'password' => 'hashed',
     ];
 }
