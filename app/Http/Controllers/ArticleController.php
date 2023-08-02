@@ -21,7 +21,7 @@ class ArticleController extends Controller
     
             if ($validator->fails()) {
                 return response()->json([
-                    'success' => false,
+                    'success' => false, 
                     'message' => 'Invalid Request',
                     'errors' => $validator->errors()
                 ], 400);
