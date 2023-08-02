@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductStock;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +17,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->query('limit', 10); // Menentukan jumlah item per halaman, defaultnya 10
+       $perPage = $request->query('limit', 10); // Menentukan jumlah ite m per halaman, defaultnya 10
         
         try {
             $validator = Validator::make($request->all(), [
@@ -35,9 +37,9 @@ class ProductController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua Product!',
-                'data' => $Product,
+                'data' => $Product->loadMissing('stock'), $Product->loadMissing('image'),
             ], 200);
-    
+
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -59,7 +61,7 @@ public function create(Request $request)
             'rating' => 'required',
             'brand' => 'required',
             'member_id' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
         $Product = new Product;
@@ -82,16 +84,17 @@ public function create(Request $request)
                 $ProductImage = new ProductImage;
                 $ProductImage->image = $imagePath;
     
-                // Save the product image with the product relationship
+                // Save the ProductImage with the product relationship
                 $Product->images()->save($ProductImage);
             }
-        }
-        // $Product->loadMissing('image');
+        } 
+        // Hide 'updated_at' and 'deleted_at' columns
         $Product->makeHidden(['updated_at', 'deleted_at']);
+        
         return response()->json([
             'success' => true,
             'message' => 'Product Berhasil Disimpan!',
-            'data' => $Product->loadMissing('image'),
+            'data' => $Product->loadMissing('images'),
         ], 201);
     }
     /**
@@ -105,18 +108,16 @@ public function create(Request $request)
      /**
      * Get the details of a specific member.
      */
-    public function show(Request $request, $id)
+    public function show(Request $request)
     {
-        
-        $Product = Product::findOrFail($request, $id);
-
-        return response()->json([
-            'success' => true,
-            'data'    => $Product,
-        ], 200);
-    }
-
-    
+        $perPage = $request->query('limit', 10);
+        $Product = Product::paginate($perPage);
+            return response()->json([
+                'success' => true,
+                'message' => 'List Semua Product!',
+                'data' => $Product->loadMissing('images'), $Product->loadMissing('stock'),
+            ], 200);
+        }
    
 
     /**
@@ -134,7 +135,7 @@ public function create(Request $request)
         'rating' => 'sometimes|required',
         'brand' => 'sometimes|required',
         'member_id' => 'sometimes|required',
-        'image' => 'image|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
+        'image.*' => 'image|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
     // Check if validation fails
@@ -153,7 +154,7 @@ public function create(Request $request)
         return response()->json([
             'success' => false,
             'message' => 'Product Tidak Ditemukan!',
-            'data' => (object)[$Product],
+            'data' => (object)[],
         ], 404);
     }
 
@@ -175,26 +176,23 @@ public function create(Request $request)
         foreach ($images as $image) {
             $imagePath = $image->store('public/images');
 
-            // Create an ArticleImage model to associate the image with the article
+            // Create an ProductImage model to associate the image with the Product
             $ProductImage = new ProductImage;
             $ProductImage->image = $imagePath;
 
-            // Associate the image with the article
+            // Associate the image with the Product
             $Product->images()->save($ProductImage);
         }
     }
 
     // Load the missing image relationship if it exists
-    $Product->loadMissing('image');
+    $Product->loadMissing('images');
 
     // Make hidden any attributes you want to exclude from the JSON response
-    $Product->makeHidden(['updated_at', 'deleted_at']);
-    $Product->image->makeHidden(['created_at', 'updated_at', 'deleted_at']);
     return response()->json([
         'success' => true,
         'message' => 'Product Berhasil Diupdate!',
-        'data' => $Product,
-        'image_url' => $imageUrl ?? null, // Add image_url only if an image was uploaded
+        'data' => $Product->loadMissing('images'),
     ], 200);
 }
 
@@ -219,7 +217,7 @@ public function create(Request $request)
             return response()->json([
                 'success' => true,
                 'message' => 'Product Berhasil Dihapus secara permanen!',
-                'data' => (object)[],
+                'data' =>  $Product,
             ], 200);
         } else {
             $Product->deleted = 1;
@@ -228,7 +226,7 @@ public function create(Request $request)
             return response()->json([
                 'success' => true,
                 'message' => 'Product Berhasil Dihapus!',
-                'data' => (object)[],
+                'data' => $Product,
             ], 200);
         }
     }
