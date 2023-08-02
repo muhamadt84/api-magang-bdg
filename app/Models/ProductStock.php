@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Product;
 use App\Models\ProductStock;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -18,5 +19,11 @@ class ProductStock extends Model
         'product_id',
         'qty'
         
+        
     ];
+
+    public function Product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

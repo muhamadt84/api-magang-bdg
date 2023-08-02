@@ -23,14 +23,14 @@ class MemberController extends Controller
          $perPage = $request->input('per_page', 10); // Number of items per page, default is 10
          $members = Members::paginate($perPage);
          $memberDetails = MembersDetail::paginate($perPage);
-     
+
          return response()->json([
              'success' => true,
              'members' => $members,
              'member_details' => $memberDetails,
          ]);
      }
-     
+
     
 
 
@@ -71,7 +71,6 @@ class MemberController extends Controller
      
          // Generate token using the newly created member record ($table_member).
          $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
-         $table_member->detail()->save($memberDetail);
      
          return response()->json([
              'success' => true,
@@ -137,8 +136,7 @@ class MemberController extends Controller
         ], 200);
     }
     
-
-
+    
 
     /**
      * Update the details of a specific member.
@@ -152,14 +150,15 @@ class MemberController extends Controller
 {
     // Validate the request data
     $validator = Validator::make($request->all(), [
+        'member_id' => 'sometimes|required',
         'first_name' => 'sometimes|required',
         'last_name' => 'sometimes|required',
         'dob' => 'sometimes|required',
         'gender' => 'sometimes|required',
         'address' => 'sometimes|required',
-        'image' => 'sometimes|required|image|mimes:jpeg,png,jpg,gif|max:20480',
+        'image' => 'image|mimes:jpeg,png,jpg,gif|max:20480',
         'bio' => 'sometimes|required',
-        'high_school' => 'sometimes|required',
+        'highschool' => 'sometimes|required',
         'phone_number' => 'sometimes|required',
     ]);
 
@@ -171,7 +170,7 @@ class MemberController extends Controller
     }
 
     // Find the member detail by id
-    $memberDetail = MembersDetail::where('member_id', $id)->first();
+    $memberDetail = MembersDetail::find($id);
 
     if (!$memberDetail) {
         return response()->json([
@@ -180,32 +179,32 @@ class MemberController extends Controller
         ], 404);
     }
 
-    // Only update the fields that are present in the request
+    // Pastikan nama kolom yang digunakan sesuai dengan struktur tabel dan modelnya
     $dataToUpdate = $request->only([
+        'member_id',
         'first_name',
         'last_name',
         'dob',
         'gender',
         'address',
         'bio',
-        'high_school', 
+        'high_school', // Fix typo here: 'higschool' should be 'highschool'
         'phone_number',
     ]);
 
-    // Handle image upload if an image is provided in the request
+    // Handle image upload
     if ($request->hasFile('image')) {
-        // Delete the old image if it exists
-        if ($memberDetail->image && Storage::disk('public')->exists($memberDetail->image)) {
-            Storage::disk('public')->delete($memberDetail->image);
-        }
-
         $image = $request->file('image');
         $imagePath = $image->store('images', 'public');
         $dataToUpdate['image'] = $imagePath;
     }
 
-    // Update the member details with the new data
-    $memberDetail->fill($dataToUpdate);
+    // Periksa apakah nilai atribut tidak kosong sebelum mengisinya ke dalam model
+    foreach ($dataToUpdate as $key => $value) {
+        if ($request->filled($key)) {
+            $memberDetail->$key = $value;
+        }
+    }
 
     if ($request->has('password')) {
         $memberDetail->password = bcrypt($request->input('password'));
@@ -219,7 +218,7 @@ class MemberController extends Controller
         'member' => $memberDetail,
     ]);
 }
-
+     
 
 
 
