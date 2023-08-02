@@ -24,11 +24,16 @@ class MembersDetail extends Authenticatable
     
 
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'image',
-        'member_id'
+        'member_id',
+        'first_name',
+        'last_name',
+        // 'dob',
+        // 'gender',
+        // 'address',
+        // 'image',
+        // 'bio',
+        // 'highschool',
+        // 'phone_number'
     ];
 
     /**
@@ -36,18 +41,18 @@ class MembersDetail extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    // protected $hidden = [
+    //     'password',
+    //     'remember_token',
+    // ];
 
     /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'timestamp',
-        'password' => 'hashed',
-    ];
+    // protected $casts = [
+    //     'email_verified_at' => 'timestamp',
+    //     'password' => 'hashed',
+    // ];
 }
