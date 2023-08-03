@@ -11,7 +11,7 @@ class like extends Model
 
      use HasFactory;
 
-
+     protected $table = 'likes';
      protected $fillable = [
         'article_id',
         'member_id'
