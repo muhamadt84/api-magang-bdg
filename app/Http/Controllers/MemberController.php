@@ -20,8 +20,11 @@ class MemberController extends Controller
     
      public function index(Request $request)
      {
+
          $perPage = $request->input('per_page', 10); // Number of items per page, default is 10
          $members = Members::paginate($perPage);
+        //  $members = Members::all();
+        //  dd($members);
          $memberDetails = MembersDetail::paginate($perPage);
 
          return response()->json([
@@ -54,30 +57,33 @@ class MemberController extends Controller
          $name_parts = explode(' ', $request->input('fullname'));
          $first_name = $name_parts[0];
          $last_name = isset($name_parts[1]) ? $name_parts[1] : '';
-     
-         // Create a new member record in the 'Members' table.
+         
+        //  Create a new member record in the 'Members' table.
          $table_member = new Members();
          $table_member->fullname = $request->input('fullname');
          $table_member->username = $request->input('username');
          $table_member->email = $request->input('email');
          $table_member->password = Hash::make($request->input('password')); // Use Hash::make() to bcrypt the password.
          $table_member->save();
-     
+         
+         
          // Create a new member detail record in the 'MembersDetail' table.
          $memberDetail = new MembersDetail(); // Assuming 'MembersDetail' is the correct model name
+         $memberDetail->member_id = $table_member->id;
          $memberDetail->first_name = $first_name;
          $memberDetail->last_name = $last_name;
          $memberDetail->save();
+        //  dd($memberDetail);
      
          // Generate token using the newly created member record ($table_member).
-         $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
+        //  $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
      
          return response()->json([
              'success' => true,
              'message' => 'Registration successful',
-             'data' => $table_member,
+            //  'data' => $table_member,
              'other_table_data' => $memberDetail,
-             'token' => $token,
+            //  'token' => $token,
          ], 201);
      }
 
@@ -156,7 +162,7 @@ class MemberController extends Controller
         'dob' => 'sometimes|required',
         'gender' => 'sometimes|required',
         'address' => 'sometimes|required',
-        'image' => 'image|mimes:jpeg,png,jpg,gif|max:20480',
+        'image' => 'sometimes|required|image|mimes:jpeg,png,jpg,gif|max:20480',
         'bio' => 'sometimes|required',
         'highschool' => 'sometimes|required',
         'phone_number' => 'sometimes|required',
@@ -187,8 +193,9 @@ class MemberController extends Controller
         'dob',
         'gender',
         'address',
+        'image',
         'bio',
-        'high_school', // Fix typo here: 'higschool' should be 'highschool'
+        'highschool', // Fix typo here: 'higschool' should be 'highschool'
         'phone_number',
     ]);
 

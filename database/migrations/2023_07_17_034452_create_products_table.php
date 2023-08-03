@@ -17,8 +17,8 @@ return new class extends Migration
             $table->integer('category_id');
             $table->text('description');
             $table->integer('price');
-            $table->decimal('discount', 900, 700);
-            $table->decimal('rating');
+            $table->decimal('discount', 8, 2);
+            $table->decimal('rating',3,2);
             $table->string('brand');
             $table->integer('member_id');
             $table->timestamps();
