@@ -15,19 +15,13 @@ class Product extends Model
     use HasFactory ;
     
     protected $table = 'products';
-    protected $fillable = [
-    
-        'name',
-        'category_id',
-        'description',
-        'price',
-        'discount',
-        'rating',
-        'brand',
-        'member_id',
-        'images',
+   // Product.php (or your Product model file)
+protected $fillable = [
+    'name', 'category_id', 'description', 'price', 'discount', 'rating', 'brand', 'member_id', 'image',
+];
+// Product.php (or your Product model file)
+protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at'];
 
-    ];
 
     public function ProductStock()
     {
