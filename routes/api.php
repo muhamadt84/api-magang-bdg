@@ -63,7 +63,7 @@ Route::middleware('auth.app-token')->group(function () {
 
 });
 
-Auth::routes(['verify' => true]);
+
 
 
 
