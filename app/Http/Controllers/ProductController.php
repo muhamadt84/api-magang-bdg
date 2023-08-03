@@ -97,7 +97,6 @@ public function create(Request $request)
             'success' => true,
             'message' => 'Product Berhasil Disimpan!',
             'data' => $Product->loadMissing('images'),
-            'data' => $Product->loadMissing('images'),
         ], 201);
     }
     /**
@@ -111,16 +110,24 @@ public function create(Request $request)
      /**
      * Get the details of a specific member.
      */
-    public function show(Request $request)
+    public function detail($id)
     {
-        $perPage = $request->query('limit', 5);
-        $Product = Product::paginate($perPage);
+        $Product = Product::findOrFail($id);
+             if ($Product) {
             return response()->json([
                 'success' => true,
-                'message' => 'Detail Semua Product!',
-                'data' => $Product->loadMissing(['ProductStock', 'images']),
+                'message' => 'Detail Product!',
+                'data'    => $Product->loadMissing('images'),
             ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post Tidak Ditemukan!',
+                'data' => (object)[],
+            ], 401);
         }
+    }
+
    
 
     /**

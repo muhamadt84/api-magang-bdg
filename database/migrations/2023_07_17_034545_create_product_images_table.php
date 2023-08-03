@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('product_images');
         Schema::create('product_images', function (Blueprint $table) {
             $table->id();
             $table->integer('product_id');
