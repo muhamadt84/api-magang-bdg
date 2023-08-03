@@ -117,7 +117,7 @@ public function create(Request $request)
             return response()->json([
                 'success' => true,
                 'message' => 'Detail Product!',
-                'data'    => $Product->loadMissing('images'),
+                'data'    => $Product->loadMissing(['ProductStock', 'images']),
             ], 200);
         } else {
             return response()->json([
