@@ -198,7 +198,7 @@ class MemberController extends Controller
         'highschool', // Fix typo here: 'higschool' should be 'highschool'
         'phone_number',
     ]);
-
+    
     // Handle image upload
     if ($request->hasFile('image')) {
         $image = $request->file('image');
@@ -218,6 +218,7 @@ class MemberController extends Controller
     }
 
     $memberDetail->save();
+
 
     return response()->json([
         'success' => true,
