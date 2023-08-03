@@ -32,10 +32,6 @@ class CommentController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua Comment!',
-                // 'current_page' => $posts->currentPage(),
-                // 'per_page' => $posts->perPage(),
-                // 'total_data' => $posts->total(),
-                // 'last_page' => $posts->lastPage(),
                 'data' => $Comment,
             ], 200);
     
@@ -114,7 +110,7 @@ class CommentController extends Controller
         ]);
     
         // Check if validation fails
-        if ($validator->fails()) {
+        if ($validator->fails()) {r
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors(),
@@ -137,7 +133,7 @@ class CommentController extends Controller
         $Comment->article_id= $validated['article_id'];
         $Comment->comment= $validated['comment'];
         $Comment->member_id = $validated['member_id'];
-        $Comment->total_comment = 2;
+        $Comment->total_comment = 0;
         // Create a new article record in the 'article' table.
         $article = new Article(); // Assuming 'article' is the correct model name
         $article->total_comment= $total_comment;
