@@ -65,6 +65,9 @@ Route::post('/post',[CommentController::class,'post']);
 Route::get('/menampilkan',[CommentController::class,'index']);
 Route::get('/specific/{id}',[CommentController::class,'detail']);
 Route::put('/deletecomment/{id}',[CommentController::class,'destroy']);
+Route::post('/nambahlike',[LikeController::class,'create']);
+Route::delete('/deletelike/{id}',[LikeController::class,'destroy']);
+
 
 
 
