@@ -137,7 +137,7 @@ class CommentController extends Controller
         $Comment->article_id= $validated['article_id'];
         $Comment->comment= $validated['comment'];
         $Comment->member_id = $validated['member_id'];
-        $Comment->total_comment = 2;
+        $Comment->total_comment = 0;
         // Create a new article record in the 'article' table.
         $article = new Article(); // Assuming 'article' is the correct model name
         $article->total_comment= $total_comment;
@@ -150,7 +150,7 @@ class CommentController extends Controller
             'message' => 'Comment Berhasil Diupdate!',
             'data' => $Comment,
         ], 200);
-    }
+    } 
 
     /**
      * Remove the specified resource from storage.
