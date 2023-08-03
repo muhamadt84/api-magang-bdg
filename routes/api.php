@@ -52,7 +52,7 @@ Route::middleware('auth.app-token')->group(function () {
   Route::put('/deletecomment/{id}',[CommentController::class,'destroy']);
   Route::post('/nambahlike',[LikeController::class,'create']);
   Route::delete('/deletelike/{id}',[LikeController::class,'destroy']);
-
+  
   Route::post('/membuatproduk',[ProductController::class,'create']);
   Route::get('/listproduk',[ProductController::class,'index']);
   Route::get('/detailproduk/{id}',[ProductController::class,'detail']);
@@ -60,9 +60,7 @@ Route::middleware('auth.app-token')->group(function () {
   Route::put('/deleteproduk/{id}',[ProductController::class,'destroy']);
   Route::post('/membuatstock',[ProductStockController::class,'add']);
   Route::get('/listprodukstock',[ProductStockController::class,'index']);
-
 });
-
 
 
 

@@ -14,26 +14,39 @@ class ProductStockController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->query('limit', 10); // Menentukan jumlah item per halaman, defaultnya 10
-        
-        try {
-            $validator = Validator::make($request->all(), [
-                'limit' => 'integer|min:1|max:100' // Validasi input limit
-            ]);
+        $perPage = $request->query('limit', 10); // Set default limit to 10 items per page
     
-            if ($validator->fails()) {
+        // Validate the 'limit' parameter
+        $validator = Validator::make($request->all(), [
+            'limit' => 'integer|min:1|max:100', // Limit should be an integer between 1 and 100
+        ]);
+    
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid Request',
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+    
+        try {
+            // Fetch paginated ProductStock data
+            $productStock = ProductStock::paginate($perPage);
+    
+            // Check if there are any ProductStock records
+            if ($productStock->isEmpty()) {
                 return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid Request',
-                    'errors' => $validator->errors()
-                ], 400);
+                    'success' => true,
+                    'message' => 'No ProductStock found!',
+                    'data' => [],
+                ], 200);
             }
     
-            $ProductStock = ProductStock::paginate($perPage);
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua ProductStock!',
-                'data' => $ProductStock,
+                'data' => $productStock,
             ], 200);
     
         } catch (Exception $e) {
