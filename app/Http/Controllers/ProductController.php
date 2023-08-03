@@ -144,7 +144,7 @@ public function create(Request $request)
         'rating' => 'sometimes|required',
         'brand' => 'sometimes|required',
         'member_id' => 'sometimes|required',
-        'image.*' => 'image|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
+        'image.*' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
     // Check if validation fails
@@ -167,13 +167,12 @@ public function create(Request $request)
         ], 404);
     }
 
-    $Product->fill($request->only([
-        'name', 'category_id', 'description', 'price', 'discount', 'rating', 'brand', 'member_id'
-    ]));
+    $Product = $request->only([
+        'name', 'category_id', 'description', 'price', 'discount', 'rating', 'brand', 'member_id', 'image'
+    ]);
 
     // Save the changes
-    $Product->save();
-
+   $Product->save();
     // Handle the image upload
     if ($request->hasFile('image')) {
         $images = $request->file('image');
@@ -237,7 +236,7 @@ public function create(Request $request)
             return response()->json([
                 'success' => true,
                 'message' => 'Product Berhasil Dihapus!',
-                'data' => $Product->loadMissing(['ProductStock', 'images']),
+                'data' => (object)[],
             ], 200);
         }
     }
