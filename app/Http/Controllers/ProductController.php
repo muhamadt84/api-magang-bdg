@@ -198,6 +198,8 @@ public function create(Request $request)
     $Product->loadMissing('images');
 
     // Make hidden any attributes you want to exclude from the JSON response
+    $Product->makeHidden(['updated_at', 'deleted_at']);
+    $Product->images->makeHidden(['created_at', 'updated_at', 'deleted_at']);
     return response()->json([
         'success' => true,
         'message' => 'Product Berhasil Diupdate!',
