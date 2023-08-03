@@ -167,12 +167,16 @@ public function create(Request $request)
         ], 404);
     }
 
-    $Product = $request->only([
-        'name', 'category_id', 'description', 'price', 'discount', 'rating', 'brand', 'member_id', 'image'
-    ]);
+    $Product->fill($request->only([
+        // 'name', 'category_id', 'description', 'price', 'discount', 'rating', 'brand', 'member_id', 'image'
+        'name', 'category_id', 'description'
+    ]));
 
     // Save the changes
-   $Product->save();
+    $Product->save(); 
+    // dd($Product);
+
+
     // Handle the image upload
     if ($request->hasFile('image')) {
         $images = $request->file('image');
@@ -186,6 +190,7 @@ public function create(Request $request)
 
             // Create an ProductImage model to associate the image with the Product
             $ProductImage = new ProductImage;
+            $ProductImage->product_id = $Product->id;
             $ProductImage->image = $imagePath;
 
             // Associate the image with the Product
