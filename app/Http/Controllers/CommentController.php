@@ -32,6 +32,10 @@ class CommentController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'List Semua Comment!',
+                // 'current_page' => $posts->currentPage(),
+                // 'per_page' => $posts->perPage(),
+                // 'total_data' => $posts->total(),
+                // 'last_page' => $posts->lastPage(),
                 'data' => $Comment,
             ], 200);
     
@@ -110,7 +114,7 @@ class CommentController extends Controller
         ]);
     
         // Check if validation fails
-        if ($validator->fails()) {r
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors(),
@@ -146,7 +150,7 @@ class CommentController extends Controller
             'message' => 'Comment Berhasil Diupdate!',
             'data' => $Comment,
         ], 200);
-    }
+    } 
 
     /**
      * Remove the specified resource from storage.
