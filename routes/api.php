@@ -55,7 +55,7 @@ Route::middleware('auth.app-token')->group(function () {
 
 });
 
-Auth::routes(['verify' => true]);
+
 
 
 Route::post('/membuatproduk',[ProductController::class,'create']);

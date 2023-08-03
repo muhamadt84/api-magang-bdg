@@ -76,14 +76,14 @@ class MemberController extends Controller
         //  dd($memberDetail);
      
          // Generate token using the newly created member record ($table_member).
-        //  $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
+         $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
      
          return response()->json([
              'success' => true,
              'message' => 'Registration successful',
-            //  'data' => $table_member,
+              'data' => $table_member,
              'other_table_data' => $memberDetail,
-            //  'token' => $token,
+            'token' => $token,
          ], 201);
      }
 
