@@ -64,7 +64,20 @@ class MemberController extends Controller
          $table_member->username = $request->input('username');
          $table_member->email = $request->input('email');
          $table_member->password = Hash::make($request->input('password')); // Use Hash::make() to bcrypt the password.
-         $table_member->save();
+         try {
+            $table_member->save();
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorCode = $e->errorInfo[1];
+            if ($errorCode == 1062) { // Error code for duplicate entry
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Duplicate data. The email or username already exists.',
+                    'data' => (object)[],
+                ], 409); // HTTP status code 409 Conflict
+            } else {
+                throw $e; // Rethrow the exception if it's not a duplicate entry error.
+            }
+        }
          
          
          // Create a new member detail record in the 'MembersDetail' table.
@@ -76,14 +89,14 @@ class MemberController extends Controller
         //  dd($memberDetail);
      
          // Generate token using the newly created member record ($table_member).
-        //  $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
+         $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
      
          return response()->json([
              'success' => true,
              'message' => 'Registration successful',
             //  'data' => $table_member,
              'other_table_data' => $memberDetail,
-            //  'token' => $token,
+             'token' => $token,
          ], 201);
      }
 
