@@ -23,7 +23,7 @@ class MemberController extends Controller
 
          $perPage = $request->input('per_page', 10); // Number of items per page, default is 10
          $members = Members::paginate($perPage);
-        //  $members = Members::all();
+         $members = Members::all();
         //  dd($members);
          $memberDetails = MembersDetail::paginate($perPage);
 
@@ -86,7 +86,7 @@ class MemberController extends Controller
          $memberDetail->first_name = $first_name;
          $memberDetail->last_name = $last_name;
          $memberDetail->save();
-        //  dd($memberDetail);
+        
      
          // Generate token using the newly created member record ($table_member).
          $token = $table_member->createToken('APP-TOKEN')->plainTextToken;
@@ -94,7 +94,7 @@ class MemberController extends Controller
          return response()->json([
              'success' => true,
              'message' => 'Registration successful',
-            //  'data' => $table_member,
+            'data' => $table_member,
              'other_table_data' => $memberDetail,
              'token' => $token,
          ], 201);
