@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('product_stocks', function (Blueprint $table) {
             $table->id();
             $table->integer('product_id');
-            $table->text('qty');
+            $table->integer('qty');
             $table->timestamps();
             $table->softDeletes();
             $table->enum('deleted', ['0', '1']);
