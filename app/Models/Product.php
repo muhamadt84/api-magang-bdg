@@ -17,7 +17,7 @@ class Product extends Model
     protected $table = 'products';
    // Product.php (or your Product model file)
 protected $fillable = [
-    'name', 'category_id', 'description', 'price', 'discount', 'rating', 'brand', 'member_id', 'image',
+    'name', 'categori_id', 'description', 'price', 'discount', 'rating', 'brand', 'member_id', 'image',
 ];
 // Product.php (or your Product model file)
 protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at'];
