@@ -17,6 +17,15 @@ class AppTokenMiddleware
     {
         $expectedToken = 'MAGANGTELKOM'; // Menentukan token yang diharapkan
         $token = $request->header('APP-TOKEN');
+    
+        // Memeriksa apakah ada token yang dikirimkan dalam header
+        if (!$token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'App Token is required.',
+            ], 401);
+        }
+    
         // Memeriksa kecocokan App Token
         if ($token !== $expectedToken) {
             return response()->json([
@@ -24,7 +33,9 @@ class AppTokenMiddleware
                 'message' => 'Invalid App Token.',
             ], 401);
         }
-
+    
+        // Lanjutkan ke langkah selanjutnya jika token valid
         return $next($request);
-}
+    }
+    
 }
