@@ -52,7 +52,7 @@ class ProductController extends Controller
 
     
     
-public function add(Request $request)
+public function create(Request $request)
     {
         try {
             $validated = $request->validate([
@@ -196,8 +196,8 @@ public function add(Request $request)
         }
     
         $Product->fill($request->only([  
-        // 'name', 'categori_id', 'description', 'price', 'discount', 'rating', 'brand', 'member_id', 'image'
-        'name', 'categori_id', 'description'
+        'name', 'categori_id', 'description', 'price', 'discount', 'rating', 'brand', 'member_id', 'image'
+        // 'name', 'categori_id', 'description'
         ]));
     
         // Save the changes
@@ -231,7 +231,7 @@ public function add(Request $request)
         $Product->images->makeHidden(['created_at', 'updated_at', 'deleted_at']); // Use 'images' not 'image'
         return response()->json([
             'success' => true,
-            'message' => 'Artikel Berhasil Diupdate!',
+            'message' => 'Product Berhasil Diupdate!',
             'data' => $Product->loadMissing('images'),
         ], 200);
     } catch (ValidationException $validationException) {
