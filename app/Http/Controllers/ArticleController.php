@@ -7,6 +7,8 @@ use App\Models\ArticleImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ArticleController extends Controller
 {
@@ -46,49 +48,67 @@ class ArticleController extends Controller
   
     public function add(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|max:255',
-            'description' => 'required',
-            'member_id' => 'required',
-            'categori_id' => 'required',
-            'image.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'required|max:255',
+                'description' => 'required',
+                'member_id' => 'required|exists:table_member,id', // Check if member_id exists in the 'table_member' table
+                'categori_id' => 'required|exists:table_categories,id', // Check if categori_id exists in the 'table_categories' table
+                'image.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
     
-        $article = new Article;
-        $article->title = $validated['title'];
-        $article->description = $validated['description'];
-        $article->member_id = $validated['member_id'];
-        $article->categori_id = $validated['categori_id'];
-        $article->total_like = 0;
-        $article->total_comment = 0;
+            $article = new Article;
+            $article->title = $validated['title'];
+            $article->description = $validated['description'];
+            $article->member_id = $validated['member_id'];
+            $article->categori_id = $validated['categori_id'];
+            $article->total_like = 0;
+            $article->total_comment = 0;
     
-        $article->save();
+            $article->save();
     
-        if ($request->hasFile('image')) {
-            foreach ($request->file('image') as $image) {
-                $imagePath = $image->store('public/images');
+            if ($request->hasFile('image')) {
+                foreach ($request->file('image') as $image) {
+                    $imagePath = $image->store('public/images');
     
-                // Create an ArticleImage model to associate the image with the article
-                $articleImage = new ArticleImage;
-                $articleImage->image = $imagePath;
+                    // Assuming you have symlink set up for storage folder
+                    // Get the public URL of the stored image
+                    $imageUrl = asset('storage/' . str_replace('public/', '', $imagePath));
     
-                // Save the article image with the article relationship
-                $article->images()->save($articleImage);
+                    // Create an ArticleImage model to associate the image with the article
+                    $articleImage = new ArticleImage;
+                    $articleImage->image = $imageUrl;
+    
+                    // Save the article image with the article relationship
+                    $article->images()->save($articleImage);
+                }
             }
+    
+            // Hide 'updated_at' and 'deleted_at' columns
+            $article->makeHidden(['updated_at', 'deleted_at']);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Artikel Berhasil Disimpan!',
+                'data' => $article->loadMissing('images'),
+            ], 201);
+        } catch (ValidationException $validationException) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi Gagal',
+                'errors' => $validationException->errors(),
+            ], 422);
+        } catch (ModelNotFoundException $notFoundException) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data Tidak Ditemukan',
+                'errors' => [
+                    'member_id' => ['Member ID atau Category ID tidak ditemukan'],
+                    'categori_id' => ['Member ID atau Category ID tidak ditemukan'],
+                ],
+            ], 404);
         }
-    
-        // Hide 'updated_at' and 'deleted_at' columns
-        $article->makeHidden(['updated_at', 'deleted_at']);
-    
-        return response()->json([
-            'success' => true,
-            'message' => 'Artikel Berhasil Disimpan!',
-            'data' => $article->loadMissing('images'),
-        ], 201);
     }
-    
-    
-    
     
 
     /**
@@ -104,23 +124,26 @@ class ArticleController extends Controller
      */
     public function detail($id)
     {
-        $article = Article::findOrFail($id);
-        $article->makeHidden(['updated_at', 'deleted_at']);
-        $article->images->makeHidden(['created_at', 'updated_at', 'deleted_at']);
-             if ($article) {
+        try {
+            $article = Article::findOrFail($id);
+            $article->makeHidden(['updated_at', 'deleted_at']);
+            $article->images->makeHidden(['created_at', 'updated_at', 'deleted_at']);
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Detail Article!',
                 'data'    => $article->loadMissing('images'),
             ], 200);
-        } else {
+    
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Post Tidak Ditemukan!',
+                'message' => 'Article Tidak Ditemukan!',
                 'data' => (object)[],
-            ], 401);
+            ], 404);
         }
     }
+    
 
 
     /**
@@ -128,12 +151,13 @@ class ArticleController extends Controller
      */
     public function update(Request $request, $id)
     {
+        try{
         // Define validation rules
         $validator = Validator::make($request->all(), [
             'title' => 'sometimes|required|max:255',
             'description' => 'sometimes|required',
-            'member_id' => 'sometimes|required',
-            'categori_id' => 'sometimes|required',
+            'member_id' => 'sometimes|required|exists:table_member,id',
+            'categori_id' => 'sometimes|required|exists:table_categories,id',
             'image.*' => 'image|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
@@ -174,10 +198,10 @@ class ArticleController extends Controller
             // Upload and save the new images
             foreach ($images as $image) {
                 $imagePath = $image->store('public/images');
-    
+                $imageUrl = asset('storage/' . str_replace('public/', '', $imagePath));
                 // Create an ArticleImage model to associate the image with the article
                 $articleImage = new ArticleImage;
-                $articleImage->image = $imagePath;
+                $articleImage->image = $imageUrl;
     
                 // Associate the image with the article
                 $article->images()->save($articleImage);
@@ -195,6 +219,22 @@ class ArticleController extends Controller
             'message' => 'Artikel Berhasil Diupdate!',
             'data' => $article->loadMissing('images'),
         ], 200);
+    } catch (ValidationException $validationException) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validasi Gagal',
+            'errors' => $validationException->errors(),
+        ], 422);
+    } catch (ModelNotFoundException $notFoundException) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Data Tidak Ditemukan',
+            'errors' => [
+                'member_id' => ['Member ID atau Category ID tidak ditemukan'],
+                'categori_id' => ['Member ID atau Category ID tidak ditemukan'],
+            ],
+        ], 404);
+    }
     }
     /**
      * Remove the specified resource from storage.
