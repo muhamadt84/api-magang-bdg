@@ -21,7 +21,8 @@ class Handler extends ExceptionHandler
         'password',
         'password_confirmation',
     ];
-    public function render($request, Throwable $exception)
+    
+public function render($request, Throwable $exception)
 {
     if ($exception instanceof ModelNotFoundException && $request->wantsJson()) {
         return response()->json([
@@ -59,7 +60,7 @@ class Handler extends ExceptionHandler
         'success' => false,
         'message' => 'Internal Server Error',
         'data' => [],
-    ], 500);
+    ], 500);
 }
     /**
      * Register the exception handling callbacks for the application.
