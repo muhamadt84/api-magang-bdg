@@ -7,6 +7,8 @@ use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CommentController extends Controller
 {
@@ -49,25 +51,45 @@ class CommentController extends Controller
 
     public function create(Request $request)
     {
-        $validated = $request->validate([
-            'article_id' => 'required',
-            'comment' => 'required',
-            'member_id' => 'required'
-        ]);
+        try {
+            $validated = $request->validate([
+                'article_id' => 'required|exists:articles,id', // Check if article_id exists in the 'articles' table
+                'comment' => 'required',
+                'member_id' => 'required|exists:table_member,id', // Check if member_id exists in the 'table_member' table
+            ]);
     
-        $Comment = new Comment;
-        $Comment->article_id= $validated['article_id'];
-        $Comment->comment= $validated['comment'];
-        $Comment->member_id = $validated['member_id'];
+            $Comment = new Comment;
+            $Comment->article = $validated['article_id'];
+            $Comment->comment = $validated['comment'];
+            $Comment->member_id = $validated['member_id'];
+        
+            $Comment->save();
     
-        $Comment->save();
+        // Hide 'updated_at' and 'deleted_at' columns
+        $Comment->makeHidden(['updated_at', 'deleted_at']);
     
         return response()->json([
             'success' => true,
-            'message' => 'Comment Berhasil Disimpan!',
-            'data' => $Comment,
+            'message' => 'comment Berhasil Disimpan!',
+            'data' => $Comment->loadMissing('images'),
         ], 201);
+    } catch (ValidationException $validationException) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validasi Gagal',
+            'errors' => $validationException->errors(),
+        ], 422);
+    } catch (ModelNotFoundException $notFoundException) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Data Tidak Ditemukan',
+            'errors' => [
+                'article_id' => ['Article ID tidak ditemukan'],
+                'member_id' => ['Member ID tidak ditemukan'],
+            ],
+        ], 404);
     }
+}
     
 
     /**

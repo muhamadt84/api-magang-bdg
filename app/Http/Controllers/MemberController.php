@@ -94,13 +94,13 @@ class MemberController extends Controller
          return response()->json([
              'success' => true,
              'message' => 'Registration successful',
-            'data' => $table_member,
+             'data' => $table_member,
              'other_table_data' => $memberDetail,
              'token' => $token,
          ], 201);
      }
 
-     
+    
 
     /**
      * Login with user credentials.

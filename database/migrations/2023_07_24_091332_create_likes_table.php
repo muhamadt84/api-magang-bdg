@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('likes', function (Blueprint $table) {
             $table->id();
             $table->integer('article_id');
-            $table->text('member_id');
+            $table->integer('member_id');
             $table->timestamps();
             $table->softDeletes();
 
