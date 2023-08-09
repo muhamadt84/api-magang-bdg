@@ -6,9 +6,10 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Models\TableCategory;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\ValidationException;
 use App\Http\Requests\StoreTableCategoryRequest;
 use App\Http\Requests\UpdateTableCategoryRequest;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TableCategoryController extends Controller
 {
@@ -53,16 +54,25 @@ class TableCategoryController extends Controller
      */
     public function create(Request $request)
     {
-        $tableCategory = new TableCategory;
-        $tableCategory->name = $request->input('name');
-        // Setel nilai atribut lainnya jika ada
-    
-        $tableCategory->save();
-        return response()->json([
-            'success' => true,
-            'message' => 'Kategori Berhasil Disimpan!',
-            'data' => $tableCategory,
-        ], 201);
+        try{
+
+            $tableCategory = new TableCategory;
+            $tableCategory->name = $request->input('name');
+            // Setel nilai atribut lainnya jika ada
+            
+            $tableCategory->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Kategori Berhasil Disimpan!',
+                'data' => $tableCategory,
+            ], 201);
+        }catch (ValidationException $validationException) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validasi Gagal',
+                    'errors' => $validationException->errors(),
+                ], 422);
+        }
     }
 
     /**
